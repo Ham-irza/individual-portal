@@ -97,7 +97,7 @@ export default function Gamification() {
         { rank: 2, partner_id: '2', name: 'Asia Pacific Trading', company: 'APT', points: 12850, deals: 38, isCurrentUser: false },
         { rank: 3, partner_id: '3', name: 'European Ventures', company: 'EV', points: 11200, deals: 32, isCurrentUser: false },
         { rank: 4, partner_id: '4', name: 'North Star Consulting', company: 'NSC', points: 9800, deals: 28, isCurrentUser: false },
-        { rank: 5, partner_id: user!.id, name: profile?.full_name || 'You', company: profile?.company_name || '', points: total, deals: 12, isCurrentUser: true },
+        { rank: 5, partner_id: user!.id, name: profile?.full_name || 'You', company: '', points: total, deals: 12, isCurrentUser: true },
         { rank: 6, partner_id: '6', name: 'Pacific Rim Partners', company: 'PRP', points: 7500, deals: 21, isCurrentUser: false },
         { rank: 7, partner_id: '7', name: 'Atlantic Associates', company: 'AA', points: 6200, deals: 18, isCurrentUser: false },
         { rank: 8, partner_id: '8', name: 'Summit Solutions', company: 'SS', points: 5400, deals: 15, isCurrentUser: false },

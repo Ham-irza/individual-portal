@@ -15,14 +15,16 @@ interface CustomField {
 }
 
 export default function NewApplication() {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  
+  // Pre-populate form with logged-in user's details
   const [formData, setFormData] = useState({
-    full_name: '',
-    email: '',
-    phone: '',
+    full_name: profile?.full_name || '',
+    email: profile?.email || '',
+    phone: profile?.phone || '',
     nationality: '',
     passport_number: '',
     passport_expiry_date: '',
@@ -123,8 +125,8 @@ export default function NewApplication() {
 
       <div className="max-w-4xl mx-auto">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">New Applicant</h1>
-          <p className="text-gray-600 mt-1">Create a new visa applicant profile with all required details</p>
+          <h1 className="text-3xl font-bold text-gray-900">My Visa Application</h1>
+          <p className="text-gray-600 mt-1">Submit your visa application with all required details</p>
         </div>
 
         {error && (

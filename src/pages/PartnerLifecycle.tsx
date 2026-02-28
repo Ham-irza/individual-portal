@@ -101,7 +101,7 @@ export default function PartnerLifecycle() {
 
       // Build checklist
       const checklistItems: ChecklistItem[] = [
-        { id: '1', title: 'Complete Profile', description: 'Fill in all company details', completed: !!profile?.company_name, link: '/settings' },
+        { id: '1', title: 'Complete Profile', description: 'Fill in all your details', completed: !!profile?.full_name, link: '/settings' },
         { id: '2', title: 'Download Starter Kit', description: 'Get essential marketing materials', completed: days > 1 },
         { id: '3', title: 'Complete First Training', description: 'Finish at least one training module', completed: (trainingRes.count || 0) > 0, link: '/resources' },
         { id: '4', title: 'Submit First Referral', description: 'Register your first client referral', completed: (referralsRes.count || 0) > 0, link: '/referrals' },

@@ -29,9 +29,9 @@ export default function Login() {
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <img src="/logo.png" alt="Hainan Builder" className="mx-auto h-16 w-auto" />
-        <h2 className="mt-6 text-center text-3xl font-bold text-gray-900">Partner Portal Login</h2>
+        <h2 className="mt-6 text-center text-3xl font-bold text-gray-900">Applicant Portal Login</h2>
         <p className="mt-2 text-center text-sm text-gray-600">
-          Sign in to manage your client applications
+          Sign in to manage your application
         </p>
       </div>
 
@@ -54,7 +54,7 @@ export default function Login() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="pl-10 block w-full border border-gray-300 rounded-lg py-2.5 px-3 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                  placeholder="partner@company.com"
+                  placeholder="your@email.com"
                 />
               </div>
             </div>
@@ -86,7 +86,7 @@ export default function Login() {
 
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
-              New partner?{' '}
+              New applicant?{' '}
               <Link to="/register" className="font-medium text-orange-500 hover:text-orange-600">
                 Register here
               </Link>

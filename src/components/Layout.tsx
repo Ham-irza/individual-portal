@@ -2,11 +2,9 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage, LANGUAGES } from '@/contexts/LanguageContext';
 import { 
-  LayoutDashboard, FileText, Users, Settings, LogOut, Menu, X, 
-  Building, UserCheck, BarChart3, FolderOpen, Bell,
-  DollarSign, BookOpen, HeadphonesIcon, PieChart, FileEdit, Shield,
-  Briefcase, Target, Award, Palette, Globe, GitBranch, FileCheck,
-  Database, TrendingUp, FileSpreadsheet
+  LayoutDashboard, FileText, Settings, LogOut, Menu, X, 
+  UserCheck, BarChart3, FolderOpen, Bell,
+  DollarSign, BookOpen, HeadphonesIcon, Globe
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -21,32 +19,29 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const isTeamMember = profile?.role === 'team_member';
   const hasAdminAccess = isAdmin || isTeamMember;
 
-  const partnerNavItems = [
+  // Simplified navigation for individual applicants
+  const applicantNavItems = [
     { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { path: '/applications', label: 'Applicants', icon: FileText },
-    { path: '/deals', label: 'Deals', icon: Briefcase },
-    { path: '/referrals', label: 'Referrals', icon: Users },
-    { path: '/commissions', label: 'Commissions', icon: DollarSign },
+    { path: '/applications', label: 'My Applications', icon: FileText },
     { path: '/support', label: 'Support', icon: HeadphonesIcon },
     { path: '/reports', label: 'Reports', icon: BarChart3 },
+    { path: '/resources', label: 'Resources', icon: BookOpen },
     { path: '/settings', label: 'Settings', icon: Settings },
   ];
 
   const adminNavItems = [
     { path: '/admin', label: 'Admin Dashboard', icon: LayoutDashboard },
-    { path: '/applications', label: 'All Applicants', icon: FileText },
-    { path: '/admin/partners', label: 'Partners', icon: Building },
-    { path: '/admin/deals', label: 'Deals', icon: Briefcase },
-    { path: '/admin/referrals', label: 'Referrals', icon: Users },
+    { path: '/admin/applicants', label: 'All Applicants', icon: FileText },
+    { path: '/admin/referrals', label: 'Referrals', icon: UserCheck },
     { path: '/admin/tickets', label: 'Support Tickets', icon: HeadphonesIcon },
-    { path: '/admin/analytics', label: 'Analytics', icon: PieChart },
+    { path: '/admin/analytics', label: 'Analytics', icon: BarChart3 },
     { path: '/admin/team', label: 'Team Members', icon: UserCheck },
     { path: '/admin/documents', label: 'Documents', icon: FolderOpen },
     { path: '/admin/reports', label: 'Reports', icon: BarChart3 },
     { path: '/settings', label: 'Settings', icon: Settings },
   ];
 
-  const navItems = hasAdminAccess ? adminNavItems : partnerNavItems;
+  const navItems = hasAdminAccess ? adminNavItems : applicantNavItems;
 
   const handleSignOut = async () => {
     await signOut();
@@ -157,7 +152,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 <span className="inline-block px-2 py-0.5 bg-blue-100 text-blue-600 text-xs rounded-full">Team</span>
               )}
               {!hasAdminAccess && (
-                <span className="inline-block px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded-full">Partner</span>
+                <span className="inline-block px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded-full">Applicant</span>
               )}
             </div>
           </div>

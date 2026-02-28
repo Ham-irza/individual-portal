@@ -1,19 +1,15 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { api, tokenService } from '@/lib/api';
 
-export type UserRole = 'partner' | 'admin' | 'team_member' | 'applicant';
+export type UserRole = 'applicant' | 'admin' | 'team_member';
 
 export interface Profile {
   id: number;
   email: string;
   full_name: string | null;
-  company_name: string | null;
   role: UserRole;
   phone: string | null;
   country: string | null;
-  department: string | null;
-  specialization: string | null;
-  max_workload: number | null;
   is_active: boolean;
   created_at: string;
   updated_at: string;
@@ -22,16 +18,10 @@ export interface Profile {
 interface User {
   id: number;
   email: string;
-  first_name?: string; // Added to fix TS2339
-  is_active?: boolean; // Added to fix TS2339
+  first_name?: string;
+  is_active?: boolean;
   is_staff: boolean;
   is_superuser: boolean;
-  partner?: {
-    id: number;
-    company_name: string;
-    contact_name: string;
-    status: string;
-  };
 }
 
 interface AuthContextType {
@@ -39,7 +29,6 @@ interface AuthContextType {
   profile: Profile | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
-  signUp: (email: string, password: string, fullName: string, companyName: string, contactPhone?: string) => Promise<{ error: Error | null }>;
   signUpApplicant: (email: string, password: string, fullName?: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
@@ -57,25 +46,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const meData = await api.getMe();
       setUser(meData);
       
-      // Map backend user data to profile format
+      // Map backend user data to profile format (individual applicant only)
       const profileData: Profile = {
         id: meData.id,
         email: meData.email,
-        full_name: meData.partner?.contact_name || meData.first_name || null,
-        company_name: meData.partner?.company_name || null,
+        full_name: meData.first_name || null,
         role: meData.is_superuser
           ? 'admin'
           : meData.is_staff
           ? 'team_member'
-          : meData.partner
-          ? 'partner'
           : 'applicant',
         phone: null,
         country: null,
-        department: null,
-        specialization: null,
-        max_workload: null,
-        is_active: meData.partner ? meData.partner.status === 'active' : (meData.is_active ?? true),
+        is_active: meData.is_active ?? true,
         created_at: '',
         updated_at: '',
       };
@@ -95,7 +78,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         try {
           await fetchProfile();
         } catch (error) {
-          // Token might be invalid, clear it
           tokenService.clearTokens();
         }
       }
@@ -114,23 +96,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const signUp = async (email: string, password: string, fullName: string, companyName: string, contactPhone?: string) => {
-    try {
-      await api.register({
-        email,
-        password,
-        company_name: companyName,
-        contact_name: fullName,
-        ...(contactPhone && { contact_phone: contactPhone }),
-      });
-      // After registration, automatically log in
-      await signIn(email, password);
-      return { error: null };
-    } catch (error) {
-      return { error: error as Error };
-    }
-  };
-
   const signUpApplicant = async (email: string, password: string, fullName?: string) => {
     try {
       await api.registerApplicant({
@@ -138,7 +103,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         password,
         ...(fullName && { full_name: fullName }),
       });
-      // After registration, automatically log in
       await signIn(email, password);
       return { error: null };
     } catch (error) {
@@ -157,7 +121,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, profile, loading, signIn, signUp, signUpApplicant, signOut, refreshProfile }}>
+    <AuthContext.Provider value={{ user, profile, loading, signIn, signUpApplicant, signOut, refreshProfile }}>
       {children}
     </AuthContext.Provider>
   );

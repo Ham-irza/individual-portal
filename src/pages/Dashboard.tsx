@@ -168,9 +168,9 @@ export default function Dashboard() {
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900">
-          Welcome back, {profile?.full_name || 'Partner'}
+          Welcome back, {profile?.full_name || 'Applicant'}
         </h1>
-        <p className="text-gray-600">{profile?.company_name || 'Dashboard Overview'}</p>
+        <p className="text-gray-600">Your Application Dashboard</p>
       </div>
 
       {/* Stats Grid */}

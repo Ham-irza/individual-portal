@@ -3,7 +3,6 @@ import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { LanguageProvider } from '@/contexts/LanguageContext';
 import Login from '@/pages/Login';
 import Register from '@/pages/Register';
-import Dashboard from '@/pages/Dashboard';
 import ApplicantDashboard from '@/pages/ApplicantDashboard';
 import Applications from '@/pages/Applications';
 import NewApplication from '@/pages/NewApplication';
@@ -15,20 +14,11 @@ import AdminTeam from '@/pages/AdminTeam';
 import AdminDocuments from '@/pages/AdminDocuments';
 import AdminReports from '@/pages/AdminReports';
 import Reports from '@/pages/Reports';
-import PartnerOnboarding from '@/pages/PartnerOnboarding';
 import Referrals from '@/pages/Referrals';
-import Commissions from '@/pages/Commissions';
 import ResourceCenter from '@/pages/ResourceCenter';
 import SupportTickets from '@/pages/SupportTickets';
 import AdminAnalytics from '@/pages/AdminAnalytics';
 import AdminTickets from '@/pages/AdminTickets';
-// Phase 2 imports
-import DealRegistration from '@/pages/DealRegistration';
-import Deals from '@/pages/Deals';
-import PartnerLifecycle from '@/pages/PartnerLifecycle';
-import TrainingCenter from '@/pages/TrainingCenter';
-import CobrandedAssets from '@/pages/CobrandedAssets';
-import Gamification from '@/pages/Gamification';
 import AcceptInvitation from '@/pages/AcceptInvitation';
 import VerifyEmail from '@/pages/VerifyEmail';
 
@@ -53,10 +43,6 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
     </div>
   );
   if (user) {
-    // Redirect applicants to a simpler applicant dashboard
-    // and partners/admins to the partner dashboard
-    const { profile } = useAuth();
-    if (profile?.role === 'applicant') return <Navigate to="/applicant" />;
     return <Navigate to="/dashboard" />;
   }
   return <>{children}</>;
@@ -82,33 +68,25 @@ function AppRoutes() {
       {/* Public Routes */}
       <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
       <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
-      <Route path="/onboarding" element={<PartnerOnboarding />} />
       <Route path="/accept-invitation" element={<PublicRoute><AcceptInvitation /></PublicRoute>} />
       <Route path="/verify-email" element={<PublicRoute><VerifyEmail /></PublicRoute>} />
       
-      {/* Partner / Applicant Routes */}
-      <Route path="/applicant" element={<PrivateRoute><ApplicantDashboard /></PrivateRoute>} />
-      <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
-      <Route path="/lifecycle" element={<PrivateRoute><PartnerLifecycle /></PrivateRoute>} />
+      {/* Individual Applicant Routes */}
+      <Route path="/dashboard" element={<PrivateRoute><ApplicantDashboard /></PrivateRoute>} />
       <Route path="/applications" element={<PrivateRoute><Applications /></PrivateRoute>} />
       <Route path="/applications/new" element={<PrivateRoute><NewApplication /></PrivateRoute>} />
       <Route path="/applications/:id" element={<PrivateRoute><ApplicationDetail /></PrivateRoute>} />
-      <Route path="/deals" element={<PrivateRoute><Deals /></PrivateRoute>} />
       <Route path="/referrals" element={<PrivateRoute><Referrals /></PrivateRoute>} />
-      <Route path="/commissions" element={<PrivateRoute><Commissions /></PrivateRoute>} />
-      <Route path="/training" element={<PrivateRoute><TrainingCenter /></PrivateRoute>} />
       <Route path="/resources" element={<PrivateRoute><ResourceCenter /></PrivateRoute>} />
-      <Route path="/assets" element={<PrivateRoute><CobrandedAssets /></PrivateRoute>} />
       <Route path="/reports" element={<PrivateRoute><Reports /></PrivateRoute>} />
-      <Route path="/achievements" element={<PrivateRoute><Gamification /></PrivateRoute>} />
       <Route path="/support" element={<PrivateRoute><SupportTickets /></PrivateRoute>} />
       <Route path="/settings" element={<PrivateRoute><Settings /></PrivateRoute>} />
       
       {/* Admin Routes */}
       <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+      <Route path="/admin/applicants" element={<AdminRoute><Applications /></AdminRoute>} />
       <Route path="/admin/partners" element={<AdminRoute><AdminPartners /></AdminRoute>} />
       <Route path="/admin/referrals" element={<AdminRoute><Referrals /></AdminRoute>} />
-      <Route path="/admin/deals" element={<AdminRoute><Deals /></AdminRoute>} />
       <Route path="/admin/tickets" element={<AdminRoute><AdminTickets /></AdminRoute>} />
       <Route path="/admin/analytics" element={<AdminRoute><AdminAnalytics /></AdminRoute>} />
       <Route path="/admin/team" element={<AdminRoute><AdminTeam /></AdminRoute>} />
