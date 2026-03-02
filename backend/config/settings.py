@@ -7,10 +7,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # --- SECURITY ---
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-replace-this-immediately-in-env')
 
-# Set to True so you can see the actual error if it still fails
+# Keep True while setting up to see errors, change to False when perfectly live
 DEBUG = True 
 
-ALLOWED_HOSTS = ['*']
+# UPDATED: Restricted to the new subdomain and local testing
+ALLOWED_HOSTS = [
+    'portal.hainancorporateservices.com',
+    'localhost',
+    '127.0.0.1'
+]
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -72,13 +77,13 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 # --- DATABASES ---
-# UPDATED: Connecting to PostgreSQL using the credentials you provided
+# Connected to your newly created PostgreSQL database 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('PG_NAME', 'portal'),
-        'USER': os.environ.get('PG_USER', 'postgres'),
-        'PASSWORD': os.environ.get('PG_PASSWORD', 'postgres'),
+        'NAME': os.environ.get('PG_NAME', 'individual_portal'),
+        'USER': os.environ.get('PG_USER', 'individual_user'),
+        'PASSWORD': os.environ.get('PG_PASSWORD', 'individual_password'),
         'HOST': os.environ.get('PG_HOST', 'localhost'),
         'PORT': os.environ.get('PG_PORT', '5432'),
     }
@@ -100,7 +105,6 @@ SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
     "AUTH_HEADER_TYPES": ("Bearer",),
     "TOKEN_OBTAIN_SERIALIZER": "accounts.serializers.EmailTokenObtainPairSerializer",
-    # Disable token blacklisting
     "BLACKLIST_AFTER_ROTATION": False,
 }
 
@@ -111,19 +115,19 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
-# --- THE "LENIENT" FIXES ---
-# Include HTTP versions since you don't have SSL yet
+# --- THE PRODUCTION FIXES ---
+# UPDATED: Trusting the new secure subdomain
 CSRF_TRUSTED_ORIGINS = [
-    "http://hainanbuilders.com",
-    "http://www.hainanbuilders.com",
+    "https://portal.hainancorporateservices.com",
     "http://127.0.0.1",
     "http://localhost:5173",
     "http://localhost:3000",
 ]
 
-# THESE MUST BE FALSE IF YOU ARE NOT ON HTTPS
-SESSION_COOKIE_SECURE = False
-CSRF_COOKIE_SECURE = False
+# UPDATED: Set to True for production HTTPS (SSL)
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+# Keep False because Nginx will handle the SSL redirection for us
 SECURE_SSL_REDIRECT = False
 
 CORS_ALLOW_ALL_ORIGINS = True 
@@ -144,8 +148,6 @@ LOGGING = {
 }
 
 # --- EMAIL CONFIGURATION ---
-# Hostinger SMTP Settings
-# Email: partner@hainancorporateservices.com
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.hostinger.com')
 EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
@@ -155,5 +157,5 @@ EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'partner@hainancorporateserv
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', 'HCSGs@123')
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'partner@hainancorporateservices.com')
 
-# Frontend URL for email links
-FRONTEND_URL = os.environ.get('FRONTEND_URL', 'http://localhost:5173')
+# UPDATED: Frontend URL for email links pointing to the new domain
+FRONTEND_URL = os.environ.get('FRONTEND_URL', 'https://portal.hainancorporateservices.com')
