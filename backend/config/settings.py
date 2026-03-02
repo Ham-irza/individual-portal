@@ -10,9 +10,9 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-replace-this-immediat
 # Keep True while setting up to see errors, change to False when perfectly live
 DEBUG = True 
 
-# UPDATED: Restricted to the new subdomain and local testing
+# UPDATED: Changed to the active subdomain you have DNS access to
 ALLOWED_HOSTS = [
-    'portal.hainancorporateservices.com',
+    'portal.hainanbuilders.com',
     'localhost',
     '127.0.0.1'
 ]
@@ -77,7 +77,6 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 # --- DATABASES ---
-# Connected to your newly created PostgreSQL database 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -116,18 +115,16 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
 # --- THE PRODUCTION FIXES ---
-# UPDATED: Trusting the new secure subdomain
+# UPDATED: Pointing to the correct builders subdomain
 CSRF_TRUSTED_ORIGINS = [
-    "https://portal.hainancorporateservices.com",
+    "https://portal.hainanbuilders.com",
     "http://127.0.0.1",
     "http://localhost:5173",
     "http://localhost:3000",
 ]
 
-# UPDATED: Set to True for production HTTPS (SSL)
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
-# Keep False because Nginx will handle the SSL redirection for us
 SECURE_SSL_REDIRECT = False
 
 CORS_ALLOW_ALL_ORIGINS = True 
@@ -157,5 +154,5 @@ EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'partner@hainancorporateserv
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', 'HCSGs@123')
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'partner@hainancorporateservices.com')
 
-# UPDATED: Frontend URL for email links pointing to the new domain
-FRONTEND_URL = os.environ.get('FRONTEND_URL', 'https://portal.hainancorporateservices.com')
+# UPDATED: Frontend URL for the active subdomain
+FRONTEND_URL = os.environ.get('FRONTEND_URL', 'https://portal.hainanbuilders.com')
