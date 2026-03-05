@@ -30,7 +30,7 @@ class ApplicantListSerializer(serializers.ModelSerializer):
             "partner_name",
             "full_name",
             "passport_number",
-            "destination_country",
+            "current_country",
             "visa_type",
             "status",
             "created_at",

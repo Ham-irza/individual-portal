@@ -132,3 +132,77 @@ class RequiredDocument(models.Model):
 
     def __str__(self):
         return f"{self.service.name}: {self.title}"
+
+
+# Predefined service types and their required documents
+SERVICE_DOCUMENTS = {
+    'business_registration': [
+        {'title': 'Company 3 Name Suggestions', 'optional': False},
+        {'title': 'Shareholder Information', 'optional': False},
+        {'title': 'Email', 'optional': False},
+        {'title': 'Phone Number', 'optional': False},
+        {'title': 'Passport Bio Page', 'optional': False},
+        {'title': 'Passport Signature Page', 'optional': True},
+        {'title': 'China Last Entry Page', 'optional': True},
+        {'title': 'China or Other Country Address', 'optional': False},
+        {'title': 'Business Scope in Short', 'optional': False},
+    ],
+    'work_permit': [
+        {'title': 'White Background Photo', 'optional': False},
+        {'title': 'Degree Certificate or Transcript', 'optional': False},
+        {'title': 'Medical File', 'optional': False},
+        {'title': 'Police Non-Criminal Certificate', 'optional': False},
+        {'title': 'Experience Letter', 'optional': False},
+        {'title': 'Professional Certificate', 'optional': True},
+        {'title': 'Language Certificate (Chinese or Other)', 'optional': True},
+        {'title': 'Additional Certificate', 'optional': True},
+    ],
+    'm_visa': [
+        {'title': 'Passport Bio Page', 'optional': False},
+        {'title': 'White Background Photo', 'optional': False},
+        {'title': 'Non Criminal Certificate', 'optional': False},
+        {'title': 'Hotel Booking', 'optional': False},
+        {'title': 'Flight Booking', 'optional': False},
+        {'title': 'Itinerary', 'optional': False},
+        {'title': 'Email', 'optional': False},
+        {'title': 'Phone Number', 'optional': False},
+        {'title': 'Incorporation Letter', 'optional': True},
+        {'title': 'Information Sheet Filling', 'optional': False},
+        {'title': 'China Last Entry Page', 'optional': True},
+    ],
+    'tourist_group_visa': [
+        {'title': 'Passport Bio Page', 'optional': False},
+        {'title': 'Passport Signature Page', 'optional': True},
+        {'title': 'White Background Photo', 'optional': False},
+        {'title': 'Police Non Criminal Certificate', 'optional': True},
+        {'title': 'China Last Entry Page', 'optional': True},
+    ],
+    'health_tour_visa': [
+        {'title': 'Passport Bio Page', 'optional': False},
+        {'title': 'White Background Photo', 'optional': False},
+        {'title': 'Non Criminal Certificate', 'optional': False},
+        {'title': 'Hotel Booking', 'optional': False},
+        {'title': 'Flight Booking', 'optional': False},
+        {'title': 'Itinerary', 'optional': False},
+        {'title': 'Email', 'optional': False},
+        {'title': 'Phone Number', 'optional': False},
+        {'title': 'Incorporation Letter', 'optional': True},
+        {'title': 'Information Sheet Filling', 'optional': False},
+        {'title': 'China Last Entry Page', 'optional': True},
+        {'title': 'Previous Health Reports History and Documents Proof', 'optional': False},
+    ],
+    'family_visa': [
+        {'title': 'White Background Photo', 'optional': False},
+        {'title': 'Degree Certificate or Transcript', 'optional': False},
+        {'title': 'Medical File', 'optional': False},
+        {'title': 'Police Non-Criminal Certificate', 'optional': False},
+        {'title': 'Experience Letter', 'optional': False},
+        {'title': 'Professional Certificate', 'optional': True},
+        {'title': 'Language Certificate (Chinese or Other)', 'optional': True},
+        {'title': 'Additional Certificate', 'optional': True},
+        {'title': 'Children Passport', 'optional': False},
+        {'title': 'Passport Bio Page Photo', 'optional': False},
+        {'title': 'Marriage Certificate', 'optional': False},
+        {'title': 'Birth Certificate', 'optional': False},
+    ],
+}

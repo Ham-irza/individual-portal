@@ -27,7 +27,7 @@ class ApplicantViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     
     # Exact match filters (e.g. ?status=approved)
-    filterset_fields = ["status", "visa_type", "destination_country", "gender"]
+    filterset_fields = ["status", "visa_type", "current_country", "gender"]
     
     # Fuzzy search (e.g. ?search=AB123456)
     search_fields = ["full_name", "email", "passport_number", "phone"]

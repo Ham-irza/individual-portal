@@ -32,7 +32,7 @@ export default function NewApplication() {
     gender: 'M' as 'M' | 'F' | 'O',
     marital_status: 'single' as 'single' | 'married' | 'divorced' | 'widowed',
     visa_type: SERVICE_TYPES[0],
-    destination_country: 'UAE',
+    current_country: '',
     travel_date: '',
     notes: ''
   });
@@ -92,7 +92,7 @@ export default function NewApplication() {
         gender: formData.gender,
         marital_status: formData.marital_status,
         visa_type: formData.visa_type,
-        destination_country: formData.destination_country,
+        current_country: formData.current_country,
         travel_date: formData.travel_date || null,
         notes: formData.notes.trim() || '',
         status: 'new',
@@ -294,23 +294,17 @@ export default function NewApplication() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Destination Country</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Current Country of Residence</label>
                 <div className="relative">
                   <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <select
-                    name="destination_country"
-                    value={formData.destination_country}
+                  <input
+                    type="text"
+                    name="current_country"
+                    value={formData.current_country}
                     onChange={handleChange}
                     className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                  >
-                    <option value="UAE">UAE</option>
-                    <option value="Saudi Arabia">Saudi Arabia</option>
-                    <option value="USA">USA</option>
-                    <option value="UK">UK</option>
-                    <option value="Canada">Canada</option>
-                    <option value="Australia">Australia</option>
-                    <option value="Schengen">Schengen Area</option>
-                  </select>
+                    placeholder="e.g., Pakistan"
+                  />
                 </div>
               </div>
               <div>

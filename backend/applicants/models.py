@@ -86,7 +86,7 @@ class Applicant(models.Model):
     
     # --- Travel & Visa Info ---
     nationality = models.CharField(max_length=100, blank=True)
-    destination_country = models.CharField(max_length=100, blank=True)
+    current_country = models.CharField(max_length=100, blank=True)
     visa_type = models.CharField(max_length=100, blank=True)  # e.g., "Tourist", "Business"
     travel_date = models.DateField(null=True, blank=True)
     return_date = models.DateField(null=True, blank=True)

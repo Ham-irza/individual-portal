@@ -7,7 +7,7 @@ class ApplicantAdmin(admin.ModelAdmin):
     list_display = [
         "full_name", 
         "passport_number", 
-        "destination_country", 
+        "current_country", 
         "visa_type", 
         "status", 
         "partner", 
@@ -15,7 +15,7 @@ class ApplicantAdmin(admin.ModelAdmin):
     ]
     
     # Filters on the right side
-    list_filter = ["status", "visa_type", "destination_country", "partner", "gender"]
+    list_filter = ["status", "visa_type", "current_country", "partner", "gender"]
     
     # Search bar config (Now includes passport number!)
     search_fields = ["full_name", "email", "phone", "passport_number", "partner__company_name"]
@@ -40,7 +40,7 @@ class ApplicantAdmin(admin.ModelAdmin):
             "fields": ("phone", "email", "address")
         }),
         ("Travel Plans", {
-            "fields": ("destination_country", "visa_type", "travel_date", "return_date")
+            "fields": ("current_country", "visa_type", "travel_date", "return_date")
         }),
         ("Dynamic Data", {
             "classes": ("collapse",),  # Hide by default to keep UI clean
