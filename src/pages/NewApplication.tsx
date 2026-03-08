@@ -38,6 +38,7 @@ export default function NewApplication() {
   });
 
   const [customFields, setCustomFields] = useState<CustomField[]>([]);
+  const [uploadedFiles, setUploadedFiles] = useState<Record<number, File | null>>({});
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -203,9 +204,8 @@ export default function NewApplication() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // For now, we'll just show a success message
-    // In a real implementation, you would upload the file to the backend
-    alert(`Document "${customFields[index].key}" uploaded successfully!`);
+    // Update the uploaded files state to show the file name
+    setUploadedFiles(prev => ({ ...prev, [index]: file }));
   };
 
   return (
@@ -479,7 +479,13 @@ export default function NewApplication() {
                           Upload
                           <input type="file" className="hidden" onChange={(e) => handleDocumentUpload(index, e)} />
                         </label>
-                        <span className="text-sm text-gray-500">No file chosen</span>
+                        {uploadedFiles[index] ? (
+                          <span className="text-sm text-green-600 flex items-center gap-1">
+                            ✓ {uploadedFiles[index].name}
+                          </span>
+                        ) : (
+                          <span className="text-sm text-gray-500">No file chosen</span>
+                        )}
                       </div>
                     </div>
                   </div>
