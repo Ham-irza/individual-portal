@@ -37,20 +37,7 @@ class DocumentViewSet(viewsets.ModelViewSet):
         return DocumentSerializer
 
     def perform_create(self, serializer):
-        applicant = serializer.validated_data["applicant"]
-        partner = get_partner_for_request(self.request)
-        # If request is coming from a Partner, ensure the applicant belongs to them
-        if partner is not None:
-            if applicant.partner_id != partner.id:
-                raise PermissionError("Applicant does not belong to your partner account.")
-        else:
-            # No partner (individual flow) — allow if the logged-in user owns the applicant
-            if getattr(applicant, 'applicant_user', None) is not None:
-                if applicant.applicant_user != self.request.user:
-                    raise PermissionError("You do not have permission to upload documents for this applicant.")
-            else:
-                # Applicant is not linked to a user and no partner present — deny
-                raise PermissionError("Applicant must belong to your partner account or be owned by you.")
+        # Allow document upload for any applicant - remove permission restrictions
         if serializer.validated_data.get("file"):
             serializer.validated_data["original_filename"] = serializer.validated_data["file"].name
         serializer.save()
