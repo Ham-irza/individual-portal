@@ -1,17 +1,17 @@
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { api } from '@/lib/api';
 import { 
-  STATUS_STAGES, DOCUMENT_CATEGORIES, BACKEND_DOCUMENT_TYPES, ALLOWED_FILE_TYPES, MAX_FILE_SIZE,
-  getStatusColor, getDocStatusColor, calculateProgress
+  STATUS_STAGES, BACKEND_DOCUMENT_TYPES, ALLOWED_FILE_TYPES, MAX_FILE_SIZE,
+  getStatusColor, getDocStatusColor
 } from '@/lib/supabase';
 import Layout from '@/components/Layout';
 import DocumentRequirements from '@/components/DocumentRequirements';
 import { 
   ArrowLeft, Upload, Download, Send, FileText, MessageSquare, Clock, 
   Check, X, AlertCircle, User, Edit2, DollarSign, History, 
-  Trash2, RefreshCw, CheckCircle, XCircle
+  Trash2, RefreshCw, CheckCircle
 } from 'lucide-react';
 
 interface Applicant {
@@ -77,6 +77,7 @@ export default function ApplicationDetail() {
   const { id } = useParams();
   const { user, profile } = useAuth();
   const navigate = useNavigate();
+  
   const [app, setApp] = useState<Applicant | null>(null);
   const [documents, setDocuments] = useState<Document[]>([]);
   const [messages, setMessages] = useState<any[]>([]);
@@ -85,16 +86,15 @@ export default function ApplicationDetail() {
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
-  const [dragActive, setDragActive] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState('');
   const [activeTab, setActiveTab] = useState<'documents' | 'messages' | 'history' | 'payments'>('documents');
+  
   const [editingExtra, setEditingExtra] = useState(false);
   const [extraDataEdit, setExtraDataEdit] = useState<Record<string, string>>({});
   const [newFieldKey, setNewFieldKey] = useState('');
   const [newFieldValue, setNewFieldValue] = useState('');
+  
   const [serviceTypes, setServiceTypes] = useState<ServiceType[]>([]);
   const [documentRequirements, setDocumentRequirements] = useState<DocumentRequirement[]>([]);
-  const fileInputRef = useRef<HTMLInputElement>(null);
   
   // Edit modal state
   const [showEditModal, setShowEditModal] = useState(false);
@@ -108,9 +108,6 @@ export default function ApplicationDetail() {
   const isAdmin = profile?.role === 'admin' || profile?.role === 'team_member';
 
   const visaTypeKey = app?.visa_type?.toLowerCase().replace(/\s+/g, '_') || '';
-  const applicantDocRequirements = documentRequirements.filter(
-    (req) => req.service_key === visaTypeKey || req.service_name?.toLowerCase() === app?.visa_type?.toLowerCase()
-  );
 
   // Get custom fields for the visa type
   const getCustomFieldsForVisaType = (visaType: string): { key: string; label: string; isDocument: boolean }[] => {
@@ -223,35 +220,6 @@ export default function ApplicationDetail() {
     }
   };
 
-  const startEditingExtra = () => {
-    if (app?.extra_data) {
-      setExtraDataEdit({ ...app.extra_data });
-    } else {
-      setExtraDataEdit({});
-    }
-    setEditingExtra(true);
-  };
-
-  const cancelEditingExtra = () => {
-    setEditingExtra(false);
-    setNewFieldKey('');
-    setNewFieldValue('');
-  };
-
-  const addNewExtraField = () => {
-    if (newFieldKey.trim()) {
-      setExtraDataEdit({ ...extraDataEdit, [newFieldKey.trim()]: newFieldValue });
-      setNewFieldKey('');
-      setNewFieldValue('');
-    }
-  };
-
-  const removeExtraField = (key: string) => {
-    const updated = { ...extraDataEdit };
-    delete updated[key];
-    setExtraDataEdit(updated);
-  };
-
   const updateExtraField = (key: string, value: string) => {
     setExtraDataEdit({ ...extraDataEdit, [key]: value });
   };
@@ -272,16 +240,6 @@ export default function ApplicationDetail() {
 
   const sendMessage = async () => {
     alert('Messages feature coming soon');
-  };
-
-  const handleDrag = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (e.type === 'dragenter' || e.type === 'dragover') {
-      setDragActive(true);
-    } else if (e.type === 'dragleave') {
-      setDragActive(false);
-    }
   };
 
   const validateFile = (file: File): string | null => {
@@ -315,25 +273,6 @@ export default function ApplicationDetail() {
     } finally {
       setUploading(false);
     }
-  };
-
-  const handleDrop = async (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
-    const files = Array.from(e.dataTransfer.files);
-    if (files.length > 0 && selectedCategory) {
-      for (const file of files) await uploadFile(file, selectedCategory);
-    } else if (!selectedCategory) {
-      alert('Please select a document category first');
-    }
-  };
-
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || !selectedCategory) return;
-    for (const file of Array.from(files)) await uploadFile(file, selectedCategory);
-    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   const downloadFile = async (doc: Document) => {
@@ -374,7 +313,6 @@ export default function ApplicationDetail() {
   if (loading) return <Layout><div className="text-center py-12"><div className="animate-spin h-8 w-8 border-4 border-orange-500 border-t-transparent rounded-full mx-auto"></div></div></Layout>;
   if (!app) return <Layout><div className="text-center py-12">Application not found</div></Layout>;
 
-  const BACKEND_STATUSES = ['new', 'docs_pending', 'processing', 'approved', 'rejected', 'completed'] as const;
   const documentTypeOptions = [...BACKEND_DOCUMENT_TYPES];
 
   const computeStageFromDocs = () => {
@@ -482,7 +420,6 @@ export default function ApplicationDetail() {
             {app.notes && <p className="mt-4 text-sm text-gray-600 bg-gray-50 p-3 rounded-lg">{app.notes}</p>}
           </div>
 
-
           {app?.visa_type && (
             <DocumentRequirements
               serviceKey={visaTypeKey}
@@ -543,25 +480,13 @@ export default function ApplicationDetail() {
             <div className="p-6">
               {activeTab === 'documents' && (
                 <div>
-                  <div className="mb-6">
-                    <div className="flex gap-4 mb-4">
-                      <select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)} className="flex-1 border border-gray-300 rounded-lg py-2 px-3 focus:ring-2 focus:ring-orange-500">
-                        <option value="">Select document type...</option>
-                        {documentTypeOptions.map(({ value, label }) => <option key={value} value={value}>{label}</option>)}
-                      </select>
-                      <label className={`flex items-center gap-2 px-4 py-2 rounded-lg cursor-pointer transition ${selectedCategory ? 'bg-orange-500 text-white hover:bg-orange-600' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}>
-                        <Upload className="h-4 w-4" /> Upload
-                        <input ref={fileInputRef} type="file" className="hidden" onChange={handleFileChange} disabled={!selectedCategory || uploading} multiple accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" />
-                      </label>
+                  {uploading && (
+                    <div className="mb-4 p-4 bg-orange-50 text-orange-700 rounded-lg flex items-center gap-2">
+                      <RefreshCw className="h-5 w-5 animate-spin" />
+                      <span>Uploading document...</span>
                     </div>
-                    <div onDragEnter={handleDrag} onDragLeave={handleDrag} onDragOver={handleDrag} onDrop={handleDrop} className={`border-2 border-dashed rounded-xl p-8 text-center transition ${dragActive ? 'border-orange-500 bg-orange-50' : 'border-gray-300'}`}>
-                      {uploading ? (
-                        <div className="flex items-center justify-center gap-2"><RefreshCw className="h-5 w-5 animate-spin text-orange-500" /><span className="text-gray-600">Uploading...</span></div>
-                      ) : (
-                        <><Upload className="h-8 w-8 mx-auto text-gray-400 mb-2" /><p className="text-gray-600">Drag and drop files here</p><p className="text-xs text-gray-400 mt-1">PDF, JPG, PNG, DOC, DOCX - Max 50MB</p></>
-                      )}
-                    </div>
-                  </div>
+                  )}
+                  
                   <h4 className="font-medium text-gray-900 mb-3">Document Checklist</h4>
                   <div className="space-y-2">
                     {customFields.map((field) => {
@@ -577,24 +502,39 @@ export default function ApplicationDetail() {
                             <span className="text-sm font-medium text-gray-700">{field.label}</span>
                           </div>
                           <div className="flex items-center gap-2">
-                            <span className={`text-xs px-2 py-1 rounded-full ${hasApproved ? 'bg-green-100 text-green-700' : hasUploaded ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-500'}`}>
-                              {hasApproved ? 'Approved' : hasUploaded ? 'Uploaded' : 'Pending'}
-                            </span>
-                            {field.isDocument && (
-                              <label className={`flex items-center gap-2 px-3 py-1.5 rounded-lg cursor-pointer transition ${hasApproved ? 'bg-green-500 text-white hover:bg-green-600' : hasUploaded ? 'bg-blue-500 text-white hover:bg-blue-600' : 'bg-orange-500 text-white hover:bg-orange-600'}`}>
-                                <Upload className="h-4 w-4" />
-                                Upload
-                                <input type="file" className="hidden" onChange={(e) => {
-                                  const file = e.target.files?.[0];
-                                  if (file) uploadFile(file, field.key);
-                                }} />
-                              </label>
+                            {field.isDocument ? (
+                              <>
+                                <span className={`text-xs px-2 py-1 rounded-full ${hasApproved ? 'bg-green-100 text-green-700' : hasUploaded ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-500'}`}>
+                                  {hasApproved ? 'Approved' : hasUploaded ? 'Uploaded' : 'Pending'}
+                                </span>
+                                <label className={`flex items-center gap-2 px-3 py-1.5 rounded-lg cursor-pointer transition ${hasApproved ? 'bg-green-500 text-white hover:bg-green-600' : hasUploaded ? 'bg-blue-500 text-white hover:bg-blue-600' : 'bg-orange-500 text-white hover:bg-orange-600'}`}>
+                                  <Upload className="h-4 w-4" />
+                                  Upload
+                                  <input type="file" className="hidden" disabled={uploading} onChange={(e) => {
+                                    const file = e.target.files?.[0];
+                                    if (file) uploadFile(file, field.key);
+                                    // Reset input so the same file can be uploaded again if needed
+                                    e.target.value = '';
+                                  }} />
+                                </label>
+                              </>
+                            ) : (
+                              <input
+                                type="text"
+                                value={fieldValue}
+                                onChange={(e) => updateExtraField(field.key, e.target.value)}
+                                onBlur={saveExtraData} // Automatically save when user clicks away
+                                className="w-48 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 text-sm"
+                                placeholder={`Enter ${field.label}`}
+                                disabled={!isAdmin}
+                              />
                             )}
                           </div>
                         </div>
                       );
                     })}
                   </div>
+                  
                   {documents.length > 0 && (
                     <div className="mt-6">
                       <h4 className="font-medium text-gray-900 mb-3">Uploaded Documents</h4>
@@ -707,8 +647,12 @@ export default function ApplicationDetail() {
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Actions</h3>
             <div className="space-y-2">
-              <button onClick={() => { setActiveTab('documents'); setSelectedCategory(documentTypeOptions[0]?.value ?? ''); }} className="w-full flex items-center justify-center gap-2 py-2.5 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition"><Upload className="h-4 w-4" /> Upload Document</button>
-              <button onClick={() => setActiveTab('messages')} className="w-full flex items-center justify-center gap-2 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition"><MessageSquare className="h-4 w-4" /> Send Message</button>
+              <button onClick={() => setActiveTab('documents')} className="w-full flex items-center justify-center gap-2 py-2.5 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition">
+                <Upload className="h-4 w-4" /> Upload Document
+              </button>
+              <button onClick={() => setActiveTab('messages')} className="w-full flex items-center justify-center gap-2 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition">
+                <MessageSquare className="h-4 w-4" /> Send Message
+              </button>
             </div>
           </div>
         </div>
