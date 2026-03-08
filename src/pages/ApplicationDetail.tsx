@@ -88,10 +88,7 @@ export default function ApplicationDetail() {
   const [uploading, setUploading] = useState(false);
   const [activeTab, setActiveTab] = useState<'documents' | 'messages' | 'history' | 'payments'>('documents');
   
-  const [editingExtra, setEditingExtra] = useState(false);
   const [extraDataEdit, setExtraDataEdit] = useState<Record<string, string>>({});
-  const [newFieldKey, setNewFieldKey] = useState('');
-  const [newFieldValue, setNewFieldValue] = useState('');
   
   const [serviceTypes, setServiceTypes] = useState<ServiceType[]>([]);
   const [documentRequirements, setDocumentRequirements] = useState<DocumentRequirement[]>([]);
@@ -221,17 +218,15 @@ export default function ApplicationDetail() {
   };
 
   const updateExtraField = (key: string, value: string) => {
-    setExtraDataEdit({ ...extraDataEdit, [key]: value });
+    setExtraDataEdit(prev => ({ ...prev, [key]: value }));
   };
 
   const saveExtraData = async () => {
     if (!app) return;
     try {
-      await api.updateApplicant(app.id, { extra_data: extraDataEdit });
-      setApp({ ...app, extra_data: extraDataEdit });
-      setEditingExtra(false);
-      setNewFieldKey('');
-      setNewFieldValue('');
+      const updatedExtraData = { ...(app.extra_data || {}), ...extraDataEdit };
+      await api.updateApplicant(app.id, { extra_data: updatedExtraData });
+      setApp({ ...app, extra_data: updatedExtraData });
     } catch (error) {
       console.error('Error saving custom fields:', error);
       alert('Failed to save custom fields');
@@ -490,7 +485,10 @@ export default function ApplicationDetail() {
                   <h4 className="font-medium text-gray-900 mb-3">Document Checklist</h4>
                   <div className="space-y-2">
                     {customFields.map((field) => {
-                      const fieldValue = app.extra_data?.[field.key] || '';
+                      const fieldValue = extraDataEdit[field.key] !== undefined 
+                        ? extraDataEdit[field.key] 
+                        : (app.extra_data?.[field.key] || '');
+
                       const catDocs = documents.filter(d => d.document_type === field.key);
                       const hasApproved = catDocs.some(d => d.status === 'approved');
                       const hasUploaded = catDocs.length > 0;
@@ -513,7 +511,6 @@ export default function ApplicationDetail() {
                                   <input type="file" className="hidden" disabled={uploading} onChange={(e) => {
                                     const file = e.target.files?.[0];
                                     if (file) uploadFile(file, field.key);
-                                    // Reset input so the same file can be uploaded again if needed
                                     e.target.value = '';
                                   }} />
                                 </label>
@@ -523,7 +520,7 @@ export default function ApplicationDetail() {
                                 type="text"
                                 value={fieldValue}
                                 onChange={(e) => updateExtraField(field.key, e.target.value)}
-                                onBlur={saveExtraData} // Automatically save when user clicks away
+                                onBlur={saveExtraData}
                                 className="w-48 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 text-sm"
                                 placeholder={`Enter ${field.label}`}
                                 disabled={!isAdmin}
