@@ -141,7 +141,14 @@ export const SERVICE_TYPES = [
   'Work Visa',
   'Family Visa',
   'Business Visa',
-  'Tourist Visa'
+  'Tourist Visa',
+  'China Business Registration',
+  'China Work Visa (Z Visa)',
+  'China Business Visa (M Visa)',
+  'China Canton Fair Visa',
+  'China Tourist Visa (L Visa)',
+  'China Medical/Health Tourism Visa',
+  'China Family Visa'
 ] as const;
 
 export const STATUS_STAGES = [

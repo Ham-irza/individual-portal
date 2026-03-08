@@ -31,7 +31,7 @@ export default function NewApplication() {
     date_of_birth: '',
     gender: 'M' as 'M' | 'F' | 'O',
     marital_status: 'single' as 'single' | 'married' | 'divorced' | 'widowed',
-    visa_type: SERVICE_TYPES[0],
+    visa_type: SERVICE_TYPES[0] as string,
     current_country: '',
     travel_date: '',
     notes: ''
@@ -55,6 +55,88 @@ export default function NewApplication() {
     const newFields = [...customFields];
     newFields[index][field] = text;
     setCustomFields(newFields);
+  };
+
+  // Get custom fields for the selected visa type
+  const getCustomFieldsForVisaType = (visaType: string): CustomField[] => {
+    const visaFields: Record<string, CustomField[]> = {
+      'China Business Registration': [
+        { key: 'company_name', value: '' },
+        { key: 'business_scope', value: '' },
+        { key: 'email', value: '' },
+        { key: 'phone', value: '' },
+        { key: 'passport_bio_page', value: '' },
+        { key: 'introduction_video', value: '' }
+      ],
+      'China Work Visa (Z Visa)': [
+        { key: 'passport_bio_page', value: '' },
+        { key: 'professional_certificate', value: '' },
+        { key: 'degree_certificate', value: '' },
+        { key: 'experience_letter', value: '' },
+        { key: 'medical_file', value: '' },
+        { key: 'police_certificate', value: '' },
+        { key: 'white_background_photo', value: '' },
+        { key: 'additional_documents', value: '' }
+      ],
+      'China Business Visa (M Visa)': [
+        { key: 'passport_bio_page', value: '' },
+        { key: 'white_background_photo', value: '' },
+        { key: 'company_license', value: '' },
+        { key: 'police_certificate', value: '' },
+        { key: 'hotel_booking', value: '' },
+        { key: 'flight_ticket', value: '' },
+        { key: 'email', value: '' },
+        { key: 'phone', value: '' },
+        { key: 'china_last_entry', value: '' }
+      ],
+      'China Canton Fair Visa': [
+        { key: 'passport_bio_page', value: '' },
+        { key: 'white_background_photo', value: '' },
+        { key: 'business_card', value: '' },
+        { key: 'email', value: '' },
+        { key: 'phone', value: '' },
+        { key: 'china_last_entry', value: '' }
+      ],
+      'China Tourist Visa (L Visa)': [
+        { key: 'passport_bio_page', value: '' },
+        { key: 'white_background_photo', value: '' },
+        { key: 'police_certificate', value: '' },
+        { key: 'email', value: '' },
+        { key: 'phone', value: '' },
+        { key: 'china_last_entry', value: '' }
+      ],
+      'China Medical/Health Tourism Visa': [
+        { key: 'passport_bio_page', value: '' },
+        { key: 'white_background_photo', value: '' },
+        { key: 'medical_reports', value: '' },
+        { key: 'email', value: '' },
+        { key: 'phone', value: '' },
+        { key: 'china_last_entry', value: '' }
+      ],
+      'China Family Visa': [
+        { key: 'passport_bio_page', value: '' },
+        { key: 'professional_certificate', value: '' },
+        { key: 'degree_certificate', value: '' },
+        { key: 'experience_letter', value: '' },
+        { key: 'medical_file', value: '' },
+        { key: 'police_certificate', value: '' },
+        { key: 'white_background_photo', value: '' },
+        { key: 'marriage_certificate', value: '' },
+        { key: 'birth_certificate', value: '' },
+        { key: 'baby_passport', value: '' },
+        { key: 'baby_photo', value: '' },
+        { key: 'additional_documents', value: '' }
+      ]
+    };
+    return visaFields[visaType] || [];
+  };
+
+  const handleVisaTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const visaType = e.target.value;
+    setFormData(prev => ({ ...prev, visa_type: visaType }));
+    // Set custom fields based on visa type
+    const fields = getCustomFieldsForVisaType(visaType);
+    setCustomFields(fields);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -284,7 +366,7 @@ export default function NewApplication() {
                 <select
                   name="visa_type"
                   value={formData.visa_type}
-                  onChange={handleChange}
+                  onChange={handleVisaTypeChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                   required
                 >
