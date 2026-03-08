@@ -132,6 +132,31 @@ export default function NewApplication() {
     return visaFields[visaType] || [];
   };
 
+  // Determine if a field is a document field
+  const isDocumentField = (fieldName: string): boolean => {
+    const documentFields = [
+      'Passport Bio Page',
+      'White Background Photo',
+      'Professional Certificate',
+      'Degree Certificate',
+      'Experience Letter',
+      'Medical File',
+      'Police Non-Criminal Certificate',
+      'Company License',
+      'Hotel Booking',
+      'Flight Ticket',
+      'Business Card',
+      'Medical Reports',
+      'Marriage Certificate',
+      'Birth Certificate',
+      'Baby Passport',
+      'Baby Photo',
+      'Introduction Video',
+      'Additional Documents'
+    ];
+    return documentFields.includes(fieldName);
+  };
+
   const handleVisaTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const visaType = e.target.value;
     setFormData(prev => ({ ...prev, visa_type: visaType }));
@@ -427,18 +452,18 @@ export default function NewApplication() {
             />
           </div>
 
-          {/* Section 4: Document Requirements */}
+          {/* Section 4: Custom Fields */}
           {customFields.length > 0 && (
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
                   <FileText className="h-5 w-5 text-purple-500" />
-                  Required Documents
+                  Additional Requirements
                 </h2>
               </div>
 
               <p className="text-sm text-gray-500 mb-4">
-                Please upload the following documents for your {formData.visa_type} application:
+                Please provide the following information for your {formData.visa_type} application:
               </p>
 
               <div className="space-y-4">
@@ -473,20 +498,33 @@ export default function NewApplication() {
                         {field.key === 'Last Entry to China' && 'Previous China visa or entry stamp if applicable'}
                         {field.key === 'Additional Documents' && 'Additional documents as requested by authorities'}
                       </p>
-                      <div className="flex items-center gap-2">
-                        <label className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 cursor-pointer transition">
-                          <Upload className="h-4 w-4" />
-                          Upload
-                          <input type="file" className="hidden" onChange={(e) => handleDocumentUpload(index, e)} />
-                        </label>
-                        {uploadedFiles[index] ? (
-                          <span className="text-sm text-green-600 flex items-center gap-1">
-                            ✓ {uploadedFiles[index].name}
-                          </span>
-                        ) : (
-                          <span className="text-sm text-gray-500">No file chosen</span>
-                        )}
-                      </div>
+                      
+                      {isDocumentField(field.key) ? (
+                        // Document upload field
+                        <div className="flex items-center gap-2">
+                          <label className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 cursor-pointer transition">
+                            <Upload className="h-4 w-4" />
+                            Upload
+                            <input type="file" className="hidden" onChange={(e) => handleDocumentUpload(index, e)} />
+                          </label>
+                          {uploadedFiles[index] ? (
+                            <span className="text-sm text-green-600 flex items-center gap-1">
+                              ✓ {uploadedFiles[index].name}
+                            </span>
+                          ) : (
+                            <span className="text-sm text-gray-500">No file chosen</span>
+                          )}
+                        </div>
+                      ) : (
+                        // Text input field
+                        <input
+                          type="text"
+                          value={field.value}
+                          onChange={(e) => updateCustomField(index, 'value', e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 text-sm"
+                          placeholder={`Enter ${field.key}`}
+                        />
+                      )}
                     </div>
                   </div>
                 ))}
