@@ -45,6 +45,7 @@ class Document(models.Model):
     DOC_TYPE_TICKET = "ticket"
     DOC_TYPE_INSURANCE = "insurance"
     DOC_TYPE_OTHER = "other"
+    DOC_TYPE_INTRODUCTION_VIDEO = "introduction_video"
     
     DOC_TYPE_CHOICES = [
         (DOC_TYPE_PASSPORT, "Passport Scan"),
@@ -53,6 +54,7 @@ class Document(models.Model):
         (DOC_TYPE_TICKET, "Flight Ticket"),
         (DOC_TYPE_INSURANCE, "Travel Insurance"),
         (DOC_TYPE_OTHER, "Other"),
+        (DOC_TYPE_INTRODUCTION_VIDEO, "Introduction Video"),
     ]
 
     # --- Relationships ---
