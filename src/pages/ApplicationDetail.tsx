@@ -132,18 +132,18 @@ export default function ApplicationDetail() {
         { key: 'additional_documents', label: 'Any Additional Documents', isDocument: true }
       ],
       'china_business_visa_m': [
-        { key: 'passport_bio_page', label: 'Passport Bio Page', isDocument: true },
+        { key: 'passport', label: 'Passport', isDocument: true },
         { key: 'white_background_photo', label: 'White Background Photo', isDocument: true },
         { key: 'company_license', label: 'Company License', isDocument: true },
         { key: 'police_certificate', label: 'Police Non-Criminal Certificate', isDocument: true },
         { key: 'hotel_booking', label: 'Hotel Booking', isDocument: true },
-        { key: 'flight_ticket', label: 'Flight Ticket', isDocument: true },
+        { key: 'ticket', label: 'Ticket', isDocument: true },
         { key: 'email', label: 'Email', isDocument: false },
         { key: 'phone', label: 'Phone Number', isDocument: false },
         { key: 'china_last_entry', label: 'China Last Entry (if any)', isDocument: true }
       ],
       'china_canton_fair_visa': [
-        { key: 'passport_bio_page', label: 'Passport Bio Page', isDocument: true },
+        { key: 'passport', label: 'Passport', isDocument: true },
         { key: 'white_background_photo', label: 'White Background Photo', isDocument: true },
         { key: 'business_card', label: 'Business Card', isDocument: true },
         { key: 'email', label: 'Email', isDocument: false },
@@ -652,15 +652,17 @@ export default function ApplicationDetail() {
                   </div>
                   <h4 className="font-medium text-gray-900 mb-3">Document Checklist</h4>
                   <div className="space-y-2">
-                    {documentTypeOptions.map(({ value, label }) => {
-                      const catDocs = documents.filter(d => d.document_type === value);
+                    {customFields.map((field) => {
+                      const fieldValue = app.extra_data?.[field.key] || '';
+                      const catDocs = documents.filter(d => d.document_type === field.key);
                       const hasApproved = catDocs.some(d => d.status === 'approved');
                       const hasUploaded = catDocs.length > 0;
+                      
                       return (
-                        <div key={value} className={`flex items-center justify-between p-3 rounded-lg border ${hasApproved ? 'border-green-200 bg-green-50' : hasUploaded ? 'border-blue-200 bg-blue-50' : 'border-gray-200'}`}>
+                        <div key={field.key} className={`flex items-center justify-between p-3 rounded-lg border ${hasApproved ? 'border-green-200 bg-green-50' : hasUploaded ? 'border-blue-200 bg-blue-50' : 'border-gray-200'}`}>
                           <div className="flex items-center gap-3">
                             {hasApproved ? <CheckCircle className="h-5 w-5 text-green-600" /> : hasUploaded ? <Clock className="h-5 w-5 text-blue-600" /> : <AlertCircle className="h-5 w-5 text-gray-400" />}
-                            <span className="text-sm font-medium text-gray-700">{label}</span>
+                            <span className="text-sm font-medium text-gray-700">{field.label}</span>
                           </div>
                           <span className={`text-xs px-2 py-1 rounded-full ${hasApproved ? 'bg-green-100 text-green-700' : hasUploaded ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-500'}`}>
                             {hasApproved ? 'Approved' : hasUploaded ? 'Uploaded' : 'Pending'}
