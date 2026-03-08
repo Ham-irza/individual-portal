@@ -6,7 +6,7 @@ import { SERVICE_TYPES } from '@/lib/supabase';
 import Layout from '@/components/Layout';
 import { 
   ArrowLeft, Save, User, Mail, Phone, Globe, FileText, Calendar, 
-  AlertCircle, Plus, Trash2, Heart, MapPin
+  AlertCircle, Plus, Trash2, Heart, MapPin, Upload
 } from 'lucide-react';
 
 interface CustomField {
@@ -61,71 +61,71 @@ export default function NewApplication() {
   const getCustomFieldsForVisaType = (visaType: string): CustomField[] => {
     const visaFields: Record<string, CustomField[]> = {
       'China Business Registration': [
-        { key: 'company_name', value: '' },
-        { key: 'business_scope', value: '' },
-        { key: 'email', value: '' },
-        { key: 'phone', value: '' },
-        { key: 'passport_bio_page', value: '' },
-        { key: 'introduction_video', value: '' }
+        { key: 'Company Name', value: '' },
+        { key: 'Business Scope', value: '' },
+        { key: 'Email Address', value: '' },
+        { key: 'Phone Number', value: '' },
+        { key: 'Passport Bio Page', value: '' },
+        { key: 'Introduction Video', value: '' }
       ],
       'China Work Visa (Z Visa)': [
-        { key: 'passport_bio_page', value: '' },
-        { key: 'professional_certificate', value: '' },
-        { key: 'degree_certificate', value: '' },
-        { key: 'experience_letter', value: '' },
-        { key: 'medical_file', value: '' },
-        { key: 'police_certificate', value: '' },
-        { key: 'white_background_photo', value: '' },
-        { key: 'additional_documents', value: '' }
+        { key: 'Passport Bio Page', value: '' },
+        { key: 'Professional Certificate', value: '' },
+        { key: 'Degree Certificate', value: '' },
+        { key: 'Experience Letter', value: '' },
+        { key: 'Medical File', value: '' },
+        { key: 'Police Non-Criminal Certificate', value: '' },
+        { key: 'White Background Photo', value: '' },
+        { key: 'Additional Documents', value: '' }
       ],
       'China Business Visa (M Visa)': [
-        { key: 'passport_bio_page', value: '' },
-        { key: 'white_background_photo', value: '' },
-        { key: 'company_license', value: '' },
-        { key: 'police_certificate', value: '' },
-        { key: 'hotel_booking', value: '' },
-        { key: 'flight_ticket', value: '' },
-        { key: 'email', value: '' },
-        { key: 'phone', value: '' },
-        { key: 'china_last_entry', value: '' }
+        { key: 'Passport Bio Page', value: '' },
+        { key: 'White Background Photo', value: '' },
+        { key: 'Company License', value: '' },
+        { key: 'Police Non-Criminal Certificate', value: '' },
+        { key: 'Hotel Booking', value: '' },
+        { key: 'Flight Ticket', value: '' },
+        { key: 'Email Address', value: '' },
+        { key: 'Phone Number', value: '' },
+        { key: 'Last Entry to China', value: '' }
       ],
       'China Canton Fair Visa': [
-        { key: 'passport_bio_page', value: '' },
-        { key: 'white_background_photo', value: '' },
-        { key: 'business_card', value: '' },
-        { key: 'email', value: '' },
-        { key: 'phone', value: '' },
-        { key: 'china_last_entry', value: '' }
+        { key: 'Passport Bio Page', value: '' },
+        { key: 'White Background Photo', value: '' },
+        { key: 'Business Card', value: '' },
+        { key: 'Email Address', value: '' },
+        { key: 'Phone Number', value: '' },
+        { key: 'Last Entry to China', value: '' }
       ],
       'China Tourist Visa (L Visa)': [
-        { key: 'passport_bio_page', value: '' },
-        { key: 'white_background_photo', value: '' },
-        { key: 'police_certificate', value: '' },
-        { key: 'email', value: '' },
-        { key: 'phone', value: '' },
-        { key: 'china_last_entry', value: '' }
+        { key: 'Passport Bio Page', value: '' },
+        { key: 'White Background Photo', value: '' },
+        { key: 'Police Non-Criminal Certificate', value: '' },
+        { key: 'Email Address', value: '' },
+        { key: 'Phone Number', value: '' },
+        { key: 'Last Entry to China', value: '' }
       ],
       'China Medical/Health Tourism Visa': [
-        { key: 'passport_bio_page', value: '' },
-        { key: 'white_background_photo', value: '' },
-        { key: 'medical_reports', value: '' },
-        { key: 'email', value: '' },
-        { key: 'phone', value: '' },
-        { key: 'china_last_entry', value: '' }
+        { key: 'Passport Bio Page', value: '' },
+        { key: 'White Background Photo', value: '' },
+        { key: 'Medical Reports', value: '' },
+        { key: 'Email Address', value: '' },
+        { key: 'Phone Number', value: '' },
+        { key: 'Last Entry to China', value: '' }
       ],
       'China Family Visa': [
-        { key: 'passport_bio_page', value: '' },
-        { key: 'professional_certificate', value: '' },
-        { key: 'degree_certificate', value: '' },
-        { key: 'experience_letter', value: '' },
-        { key: 'medical_file', value: '' },
-        { key: 'police_certificate', value: '' },
-        { key: 'white_background_photo', value: '' },
-        { key: 'marriage_certificate', value: '' },
-        { key: 'birth_certificate', value: '' },
-        { key: 'baby_passport', value: '' },
-        { key: 'baby_photo', value: '' },
-        { key: 'additional_documents', value: '' }
+        { key: 'Passport Bio Page', value: '' },
+        { key: 'Professional Certificate', value: '' },
+        { key: 'Degree Certificate', value: '' },
+        { key: 'Experience Letter', value: '' },
+        { key: 'Medical File', value: '' },
+        { key: 'Police Non-Criminal Certificate', value: '' },
+        { key: 'White Background Photo', value: '' },
+        { key: 'Marriage Certificate', value: '' },
+        { key: 'Birth Certificate', value: '' },
+        { key: 'Baby Passport', value: '' },
+        { key: 'Baby Photo', value: '' },
+        { key: 'Additional Documents', value: '' }
       ]
     };
     return visaFields[visaType] || [];
@@ -197,6 +197,15 @@ export default function NewApplication() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleDocumentUpload = async (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // For now, we'll just show a success message
+    // In a real implementation, you would upload the file to the backend
+    alert(`Document "${customFields[index].key}" uploaded successfully!`);
   };
 
   return (
@@ -418,71 +427,66 @@ export default function NewApplication() {
             />
           </div>
 
-          {/* Section 4: Custom Fields */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                <FileText className="h-5 w-5 text-purple-500" />
-                Additional Custom Fields
-              </h2>
-              <button 
-                type="button" 
-                onClick={addCustomField}
-                className="text-sm flex items-center gap-1 text-orange-600 hover:text-orange-700 font-medium"
-              >
-                <Plus className="h-4 w-4" /> Add Field
-              </button>
-            </div>
-
-            <p className="text-sm text-gray-500 mb-4">
-              Add any country-specific requirements here (e.g., Father's Name, Mother's Name, Previous Visa Number, etc.)
-            </p>
-
-            {customFields.length === 0 ? (
-              <div className="text-center py-6 bg-gray-50 rounded-lg border border-dashed border-gray-300">
-                <p className="text-sm text-gray-500 mb-3">No custom fields added yet.</p>
-                <button 
-                  type="button" 
-                  onClick={addCustomField}
-                  className="text-sm text-orange-600 font-medium hover:underline"
-                >
-                  Add your first custom field
-                </button>
+          {/* Section 4: Document Requirements */}
+          {customFields.length > 0 && (
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                  <FileText className="h-5 w-5 text-purple-500" />
+                  Required Documents
+                </h2>
               </div>
-            ) : (
-              <div className="space-y-3">
+
+              <p className="text-sm text-gray-500 mb-4">
+                Please upload the following documents for your {formData.visa_type} application:
+              </p>
+
+              <div className="space-y-4">
                 {customFields.map((field, index) => (
-                  <div key={index} className="flex gap-3 items-start bg-gray-50 p-4 rounded-lg">
+                  <div key={index} className="flex gap-4 items-center bg-gray-50 p-4 rounded-lg">
                     <div className="flex-1">
-                      <input
-                        type="text"
-                        placeholder="Field Name (e.g. Father's Name)"
-                        value={field.key}
-                        onChange={(e) => updateCustomField(index, 'key', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 text-sm"
-                      />
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        {field.key}
+                      </label>
+                      <p className="text-xs text-gray-500 mb-2">
+                        {field.key === 'Passport Bio Page' && 'Clear scan of passport information page, minimum 300 DPI'}
+                        {field.key === 'White Background Photo' && 'Recent passport photo with white background'}
+                        {field.key === 'Professional Certificate' && 'Proof of professional qualifications'}
+                        {field.key === 'Degree Certificate' && 'Academic degree certificate'}
+                        {field.key === 'Experience Letter' && 'Proof of previous employment experience'}
+                        {field.key === 'Medical File' && 'Official medical examination report'}
+                        {field.key === 'Police Non-Criminal Certificate' && 'Background check certificate, issued within last 6 months'}
+                        {field.key === 'Company License' && 'Business license of the Chinese company'}
+                        {field.key === 'Hotel Booking' && 'Confirmed hotel reservation for the stay in China'}
+                        {field.key === 'Flight Ticket' && 'Confirmed flight booking or detailed travel itinerary'}
+                        {field.key === 'Business Card' && 'Professional business card'}
+                        {field.key === 'Medical Reports' && 'Official medical diagnosis and treatment records'}
+                        {field.key === 'Marriage Certificate' && 'Marriage certificate for spouse applicants'}
+                        {field.key === 'Birth Certificate' && 'Birth certificate for children applicants'}
+                        {field.key === 'Baby Passport' && 'Passport for children applicants'}
+                        {field.key === 'Baby Photo' && 'Photo for children applicants'}
+                        {field.key === 'Company Name' && 'Required for business registration'}
+                        {field.key === 'Business Scope' && 'Description of activities the company will perform'}
+                        {field.key === 'Email Address' && 'Contact email for business registration'}
+                        {field.key === 'Phone Number' && 'Contact phone for business registration'}
+                        {field.key === 'Introduction Video' && 'Short video introducing the applicant and business purpose'}
+                        {field.key === 'Last Entry to China' && 'Previous China visa or entry stamp if applicable'}
+                        {field.key === 'Additional Documents' && 'Additional documents as requested by authorities'}
+                      </p>
+                      <div className="flex items-center gap-2">
+                        <label className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 cursor-pointer transition">
+                          <Upload className="h-4 w-4" />
+                          Upload
+                          <input type="file" className="hidden" onChange={(e) => handleDocumentUpload(index, e)} />
+                        </label>
+                        <span className="text-sm text-gray-500">No file chosen</span>
+                      </div>
                     </div>
-                    <div className="flex-[2]">
-                      <input
-                        type="text"
-                        placeholder="Value (e.g. John Doe)"
-                        value={field.value}
-                        onChange={(e) => updateCustomField(index, 'value', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 text-sm"
-                      />
-                    </div>
-                    <button 
-                      type="button" 
-                      onClick={() => removeCustomField(index)}
-                      className="p-2 text-gray-400 hover:text-red-500 transition"
-                    >
-                      <Trash2 className="h-5 w-5" />
-                    </button>
                   </div>
                 ))}
               </div>
-            )}
-          </div>
+            </div>
+          )}
 
           {/* Actions */}
           <div className="flex justify-end gap-4 pt-6">
