@@ -452,18 +452,18 @@ export default function NewApplication() {
             />
           </div>
 
-          {/* Section 4: Custom Fields */}
+          {/* Section 4: Additional Information */}
           {customFields.length > 0 && (
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
                   <FileText className="h-5 w-5 text-purple-500" />
-                  Additional Requirements
+                  Additional Information
                 </h2>
               </div>
 
               <p className="text-sm text-gray-500 mb-4">
-                Please provide the following information for your {formData.visa_type} application:
+                Note: Additional documents and requirements will be requested and uploaded through your application dashboard after submission.
               </p>
 
               <div className="space-y-4">
@@ -500,20 +500,9 @@ export default function NewApplication() {
                       </p>
                       
                       {isDocumentField(field.key) ? (
-                        // Document upload field
+                        // Document field - show placeholder
                         <div className="flex items-center gap-2">
-                          <label className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 cursor-pointer transition">
-                            <Upload className="h-4 w-4" />
-                            Upload
-                            <input type="file" className="hidden" onChange={(e) => handleDocumentUpload(index, e)} />
-                          </label>
-                          {uploadedFiles[index] ? (
-                            <span className="text-sm text-green-600 flex items-center gap-1">
-                              ✓ {uploadedFiles[index].name}
-                            </span>
-                          ) : (
-                            <span className="text-sm text-gray-500">No file chosen</span>
-                          )}
+                          <span className="text-sm text-gray-500">Document will be uploaded in application dashboard</span>
                         </div>
                       ) : (
                         // Text input field

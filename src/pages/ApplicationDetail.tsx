@@ -112,6 +112,77 @@ export default function ApplicationDetail() {
     (req) => req.service_key === visaTypeKey || req.service_name?.toLowerCase() === app?.visa_type?.toLowerCase()
   );
 
+  // Get custom fields for the visa type
+  const getCustomFieldsForVisaType = (visaType: string): { key: string; label: string; isDocument: boolean }[] => {
+    const visaFields: Record<string, { key: string; label: string; isDocument: boolean }[]> = {
+      'china_business_registration': [
+        { key: 'passport_bio_page', label: 'Passport Bio Page', isDocument: true },
+        { key: 'company_name', label: 'Company Name', isDocument: false },
+        { key: 'business_scope', label: 'Business Scope', isDocument: false },
+        { key: 'email', label: 'Email', isDocument: false },
+        { key: 'phone', label: 'Phone Number', isDocument: false },
+        { key: 'introduction_video', label: 'Introduction Video', isDocument: true }
+      ],
+      'china_work_visa_z': [
+        { key: 'professional_certificate', label: 'Professional Certificate / Degree Certificate', isDocument: true },
+        { key: 'experience_letter', label: 'Experience Letter', isDocument: true },
+        { key: 'medical_file', label: 'Medical File', isDocument: true },
+        { key: 'police_certificate', label: 'Police Non-Criminal Certificate', isDocument: true },
+        { key: 'white_background_photo', label: 'White Background Photo', isDocument: true },
+        { key: 'additional_documents', label: 'Any Additional Documents', isDocument: true }
+      ],
+      'china_business_visa_m': [
+        { key: 'passport_bio_page', label: 'Passport Bio Page', isDocument: true },
+        { key: 'white_background_photo', label: 'White Background Photo', isDocument: true },
+        { key: 'company_license', label: 'Company License', isDocument: true },
+        { key: 'police_certificate', label: 'Police Non-Criminal Certificate', isDocument: true },
+        { key: 'hotel_booking', label: 'Hotel Booking', isDocument: true },
+        { key: 'flight_ticket', label: 'Flight Ticket', isDocument: true },
+        { key: 'email', label: 'Email', isDocument: false },
+        { key: 'phone', label: 'Phone Number', isDocument: false },
+        { key: 'china_last_entry', label: 'China Last Entry (if any)', isDocument: true }
+      ],
+      'china_canton_fair_visa': [
+        { key: 'passport_bio_page', label: 'Passport Bio Page', isDocument: true },
+        { key: 'white_background_photo', label: 'White Background Photo', isDocument: true },
+        { key: 'business_card', label: 'Business Card', isDocument: true },
+        { key: 'email', label: 'Email', isDocument: false },
+        { key: 'phone', label: 'Phone Number', isDocument: false },
+        { key: 'china_last_entry', label: 'China Last Entry (if any)', isDocument: true }
+      ],
+      'china_tourist_visa_l': [
+        { key: 'passport_bio_page', label: 'Passport Bio Page', isDocument: true },
+        { key: 'white_background_photo', label: 'White Background Photo', isDocument: true },
+        { key: 'police_certificate', label: 'Police Non-Criminal Certificate', isDocument: true },
+        { key: 'email', label: 'Email', isDocument: false },
+        { key: 'phone', label: 'Phone Number', isDocument: false },
+        { key: 'china_last_entry', label: 'China Last Entry (if any)', isDocument: true }
+      ],
+      'china_medical_health_tourism_visa': [
+        { key: 'passport_bio_page', label: 'Passport Bio Page', isDocument: true },
+        { key: 'white_background_photo', label: 'White Background Photo', isDocument: true },
+        { key: 'medical_reports', label: 'Medical Reports', isDocument: true },
+        { key: 'email', label: 'Email', isDocument: false },
+        { key: 'phone', label: 'Phone Number', isDocument: false },
+        { key: 'china_last_entry', label: 'China Last Entry (if any)', isDocument: true }
+      ],
+      'china_family_visa': [
+        { key: 'professional_certificate', label: 'Professional Certificate / Degree Certificate', isDocument: true },
+        { key: 'experience_letter', label: 'Experience Letter', isDocument: true },
+        { key: 'medical_file', label: 'Medical File', isDocument: true },
+        { key: 'police_certificate', label: 'Police Non-Criminal Certificate', isDocument: true },
+        { key: 'white_background_photo', label: 'White Background Photo', isDocument: true },
+        { key: 'marriage_certificate', label: 'Marriage Certificate', isDocument: true },
+        { key: 'birth_certificate', label: 'Birth Certificate of Baby', isDocument: true },
+        { key: 'baby_passport_photo', label: 'Baby Passport and Photo', isDocument: true },
+        { key: 'additional_documents', label: 'Any Additional Documents', isDocument: true }
+      ]
+    };
+    return visaFields[visaType] || [];
+  };
+
+  const customFields = getCustomFieldsForVisaType(visaTypeKey);
+
   const fetchData = useCallback(async () => {
     if (!id) return;
     try {
@@ -411,19 +482,21 @@ export default function ApplicationDetail() {
             {app.notes && <p className="mt-4 text-sm text-gray-600 bg-gray-50 p-3 rounded-lg">{app.notes}</p>}
           </div>
 
-          {(app.extra_data && Object.keys(app.extra_data).length > 0) || editingExtra ? (
+          {/* Custom Fields Section */}
+          {customFields.length > 0 && (
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
                   <FileText className="h-5 w-5 text-purple-500" />
-                  Additional Information
+                  Additional Requirements
                 </h3>
-                {isAdmin && !editingExtra && (
+                {isAdmin && (
                   <button onClick={startEditingExtra} className="flex items-center gap-2 text-orange-600 hover:text-orange-700 font-medium text-sm">
                     <Edit2 className="h-4 w-4" /> Edit
                   </button>
                 )}
               </div>
+              
               {editingExtra ? (
                 <div className="space-y-4">
                   {Object.entries(extraDataEdit).map(([key, value]) => (
@@ -461,17 +534,42 @@ export default function ApplicationDetail() {
                   </div>
                 </div>
               ) : (
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
-                  {Object.entries(app.extra_data || {}).map(([key, value]) => (
-                    <div key={key}>
-                      <span className="text-gray-500 capitalize">{key.replace(/_/g, ' ')}:</span>
-                      <span className="text-gray-900 font-medium block">{typeof value === 'object' ? JSON.stringify(value) : String(value || '-')}</span>
-                    </div>
-                  ))}
+                <div className="space-y-4">
+                  {customFields.map((field) => {
+                    const fieldValue = app.extra_data?.[field.key] || '';
+                    return (
+                      <div key={field.key} className="flex gap-4 items-center bg-gray-50 p-4 rounded-lg">
+                        <div className="flex-1">
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            {field.label}
+                          </label>
+                          {field.isDocument ? (
+                            // Document field
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm text-gray-500">Document will be uploaded here</span>
+                              {fieldValue && (
+                                <span className="text-sm text-green-600">✓ Provided</span>
+                              )}
+                            </div>
+                          ) : (
+                            // Text field
+                            <input
+                              type="text"
+                              value={fieldValue}
+                              onChange={(e) => updateExtraField(field.key, e.target.value)}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 text-sm"
+                              placeholder={`Enter ${field.label}`}
+                              disabled={!isAdmin}
+                            />
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </div>
-          ) : null}
+          )}
 
           {app?.visa_type && (
             <DocumentRequirements
