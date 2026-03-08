@@ -7,6 +7,7 @@ import {
   getStatusColor, getDocStatusColor, calculateProgress
 } from '@/lib/supabase';
 import Layout from '@/components/Layout';
+import DocumentRequirements from '@/components/DocumentRequirements';
 import { 
   ArrowLeft, Upload, Download, Send, FileText, MessageSquare, Clock, 
   Check, X, AlertCircle, User, Edit2, DollarSign, History, 
@@ -472,33 +473,13 @@ export default function ApplicationDetail() {
             </div>
           ) : null}
 
-          {applicantDocRequirements.length > 0 && (
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <FileText className="h-5 w-5 text-blue-500" />
-                <h3 className="text-lg font-semibold text-gray-900">Required Documents for {app?.visa_type || 'This Visa'}</h3>
-              </div>
-              <div className="space-y-2">
-                {applicantDocRequirements.map((req) => {
-                  const uploadedDocs = documents.filter((doc) => doc.document_type.toLowerCase().includes(req.document_name.toLowerCase()));
-                  const hasApproved = uploadedDocs.some((d) => d.status === 'approved');
-                  const hasUploaded = uploadedDocs.length > 0;
-                  return (
-                    <div key={req.id} className={`flex items-center justify-between p-3 rounded-lg border ${hasApproved ? 'border-green-200 bg-green-50' : hasUploaded ? 'border-blue-200 bg-blue-50' : req.is_optional ? 'border-gray-200 bg-gray-50' : 'border-yellow-200 bg-yellow-50'}`}>
-                      <div className="flex items-center gap-3 flex-1">
-                        {hasApproved ? <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0" /> : hasUploaded ? <Clock className="h-5 w-5 text-blue-600 flex-shrink-0" /> : req.is_optional ? <AlertCircle className="h-5 w-5 text-gray-400 flex-shrink-0" /> : <AlertCircle className="h-5 w-5 text-yellow-600 flex-shrink-0" />}
-                        <div className="min-w-0 flex-1">
-                          <p className="text-sm font-medium text-gray-900">{req.document_name}{req.is_optional && <span className="text-xs font-normal text-gray-500 ml-2">(Optional)</span>}</p>
-                        </div>
-                      </div>
-                      <span className={`text-xs px-2.5 py-1 rounded-full whitespace-nowrap ml-2 ${hasApproved ? 'bg-green-100 text-green-700' : hasUploaded ? 'bg-blue-100 text-blue-700' : req.is_optional ? 'bg-gray-100 text-gray-600' : 'bg-yellow-100 text-yellow-700'}`}>
-                        {hasApproved ? 'Approved' : hasUploaded ? 'Uploaded' : req.is_optional ? 'Optional' : 'Pending'}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
+          {app?.visa_type && (
+            <DocumentRequirements
+              serviceKey={visaTypeKey}
+              applicantId={app.id}
+              onDocumentUpload={() => setActiveTab('documents')}
+              className="animate-in fade-in-0"
+            />
           )}
 
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">

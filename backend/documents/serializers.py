@@ -37,7 +37,19 @@ class DocumentSerializer(serializers.ModelSerializer):
         read_only_fields = ["original_filename", "uploaded_at", "status"]
 
     def validate_file(self, value):
-        validate_upload_file(value)
+        # Get service type from applicant's visa_type if available
+        applicant = self.initial_data.get('applicant')
+        service_type = None
+        if applicant:
+            try:
+                from applicants.models import Applicant
+                applicant_obj = Applicant.objects.get(id=applicant)
+                service_type = getattr(applicant_obj, 'visa_type', None)
+            except Applicant.DoesNotExist:
+                pass
+        
+        document_type = self.initial_data.get('document_type')
+        validate_upload_file(value, document_type=document_type, service_type=service_type)
         return value
 
 
