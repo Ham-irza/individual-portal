@@ -482,94 +482,6 @@ export default function ApplicationDetail() {
             {app.notes && <p className="mt-4 text-sm text-gray-600 bg-gray-50 p-3 rounded-lg">{app.notes}</p>}
           </div>
 
-          {/* Custom Fields Section */}
-          {customFields.length > 0 && (
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                  <FileText className="h-5 w-5 text-purple-500" />
-                  Additional Requirements
-                </h3>
-                {isAdmin && (
-                  <button onClick={startEditingExtra} className="flex items-center gap-2 text-orange-600 hover:text-orange-700 font-medium text-sm">
-                    <Edit2 className="h-4 w-4" /> Edit
-                  </button>
-                )}
-              </div>
-              
-              {editingExtra ? (
-                <div className="space-y-4">
-                  {Object.entries(extraDataEdit).map(([key, value]) => (
-                    <div key={key} className="flex gap-3 items-start bg-gray-50 p-4 rounded-lg">
-                      <div className="flex-1">
-                        <label className="block text-xs font-medium text-gray-600 mb-1">Field Name</label>
-                        <input type="text" value={key} disabled className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-600" />
-                      </div>
-                      <div className="flex-[2]">
-                        <label className="block text-xs font-medium text-gray-600 mb-1">Value</label>
-                        <input type="text" value={value} onChange={(e) => updateExtraField(key, e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500" />
-                      </div>
-                      <button type="button" onClick={() => removeExtraField(key)} className="p-2 text-gray-400 hover:text-red-500 transition mt-5">
-                        <Trash2 className="h-5 w-5" />
-                      </button>
-                    </div>
-                  ))}
-                  <div className="border-t pt-4">
-                    <p className="text-sm text-gray-600 mb-3">Add a new custom field:</p>
-                    <div className="flex gap-3 items-end">
-                      <div className="flex-1">
-                        <label className="block text-xs font-medium text-gray-600 mb-1">Field Name</label>
-                        <input type="text" placeholder="e.g. Father's Name" value={newFieldKey} onChange={(e) => setNewFieldKey(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 text-sm" />
-                      </div>
-                      <div className="flex-[2]">
-                        <label className="block text-xs font-medium text-gray-600 mb-1">Value</label>
-                        <input type="text" placeholder="e.g. John Doe" value={newFieldValue} onChange={(e) => setNewFieldValue(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 text-sm" />
-                      </div>
-                      <button type="button" onClick={addNewExtraField} className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition text-sm">Add</button>
-                    </div>
-                  </div>
-                  <div className="flex justify-end gap-2 pt-4 border-t">
-                    <button onClick={cancelEditingExtra} className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium text-sm">Cancel</button>
-                    <button onClick={saveExtraData} className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 font-medium text-sm">Save Changes</button>
-                  </div>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {customFields.map((field) => {
-                    const fieldValue = app.extra_data?.[field.key] || '';
-                    return (
-                      <div key={field.key} className="flex gap-4 items-center bg-gray-50 p-4 rounded-lg">
-                        <div className="flex-1">
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
-                            {field.label}
-                          </label>
-                          {field.isDocument ? (
-                            // Document field
-                            <div className="flex items-center gap-2">
-                              <span className="text-sm text-gray-500">Document will be uploaded here</span>
-                              {fieldValue && (
-                                <span className="text-sm text-green-600">✓ Provided</span>
-                              )}
-                            </div>
-                          ) : (
-                            // Text field
-                            <input
-                              type="text"
-                              value={fieldValue}
-                              onChange={(e) => updateExtraField(field.key, e.target.value)}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 text-sm"
-                              placeholder={`Enter ${field.label}`}
-                              disabled={!isAdmin}
-                            />
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          )}
 
           {app?.visa_type && (
             <DocumentRequirements
@@ -664,9 +576,21 @@ export default function ApplicationDetail() {
                             {hasApproved ? <CheckCircle className="h-5 w-5 text-green-600" /> : hasUploaded ? <Clock className="h-5 w-5 text-blue-600" /> : <AlertCircle className="h-5 w-5 text-gray-400" />}
                             <span className="text-sm font-medium text-gray-700">{field.label}</span>
                           </div>
-                          <span className={`text-xs px-2 py-1 rounded-full ${hasApproved ? 'bg-green-100 text-green-700' : hasUploaded ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-500'}`}>
-                            {hasApproved ? 'Approved' : hasUploaded ? 'Uploaded' : 'Pending'}
-                          </span>
+                          <div className="flex items-center gap-2">
+                            <span className={`text-xs px-2 py-1 rounded-full ${hasApproved ? 'bg-green-100 text-green-700' : hasUploaded ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-500'}`}>
+                              {hasApproved ? 'Approved' : hasUploaded ? 'Uploaded' : 'Pending'}
+                            </span>
+                            {field.isDocument && (
+                              <label className={`flex items-center gap-2 px-3 py-1.5 rounded-lg cursor-pointer transition ${hasApproved ? 'bg-green-500 text-white hover:bg-green-600' : hasUploaded ? 'bg-blue-500 text-white hover:bg-blue-600' : 'bg-orange-500 text-white hover:bg-orange-600'}`}>
+                                <Upload className="h-4 w-4" />
+                                Upload
+                                <input type="file" className="hidden" onChange={(e) => {
+                                  const file = e.target.files?.[0];
+                                  if (file) uploadFile(file, field.key);
+                                }} />
+                              </label>
+                            )}
+                          </div>
                         </div>
                       );
                     })}
