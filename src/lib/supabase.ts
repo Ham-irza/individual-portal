@@ -216,3 +216,4 @@ export const getDocStatusColor = (status: string): string => {
     default: return 'text-gray-600 bg-gray-50';
   }
 };
+
