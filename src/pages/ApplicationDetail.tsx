@@ -57,22 +57,6 @@ interface Payment {
   created_at: string;
 }
 
-interface ServiceType {
-  id: number;
-  key: string;
-  name: string;
-  description?: string;
-}
-
-interface DocumentRequirement {
-  id: number;
-  service: number;
-  service_key?: string;
-  service_name?: string;
-  document_name: string;
-  is_optional: boolean;
-}
-
 export default function ApplicationDetail() {
   const { id } = useParams();
   const { user, profile } = useAuth();
@@ -89,9 +73,6 @@ export default function ApplicationDetail() {
   const [activeTab, setActiveTab] = useState<'documents' | 'messages' | 'history' | 'payments'>('documents');
   
   const [extraDataEdit, setExtraDataEdit] = useState<Record<string, string>>({});
-  
-  const [serviceTypes, setServiceTypes] = useState<ServiceType[]>([]);
-  const [documentRequirements, setDocumentRequirements] = useState<DocumentRequirement[]>([]);
   
   // Edit modal state
   const [showEditModal, setShowEditModal] = useState(false);
@@ -181,20 +162,16 @@ export default function ApplicationDetail() {
     if (!id) return;
     try {
       const applicantId = parseInt(id);
-      const [appData, docsData, payData, servicesData, reqsData] = await Promise.all([
+      const [appData, docsData, payData] = await Promise.all([
         api.getApplicant(applicantId),
         api.getDocuments(applicantId),
         api.getPayments(applicantId),
-        api.getServiceTypes().catch(() => []),
-        api.getDocumentRequirements().catch(() => []),
       ]);
       setApp(appData);
       const normalizedDocs = Array.isArray(docsData) ? docsData : ((docsData as any)?.results || []);
       const normalizedPayments = Array.isArray(payData) ? payData : ((payData as any)?.results || []);
       setDocuments(normalizedDocs);
       setPayments(normalizedPayments);
-      setServiceTypes(Array.isArray(servicesData) ? servicesData : ((servicesData as any)?.results || []));
-      setDocumentRequirements(Array.isArray(reqsData) ? reqsData : ((reqsData as any)?.results || []));
       setMessages([]);
       setStatusHistory([]);
     } catch (error) {
