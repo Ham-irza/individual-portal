@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { api } from '@/lib/api';
 import { 
   FileText, CheckCircle, XCircle, AlertCircle, 
-  Plus, Upload, Eye, Download, Trash2, Edit2, 
+  Upload, Eye, Download, Trash2, Edit2, 
   BadgeInfo, Clock, Calendar, User, Globe, Mail, Phone
 } from 'lucide-react';
 
@@ -38,6 +38,118 @@ interface DocumentRequirementsProps {
   className?: string;
 }
 
+// Map requirement titles to exact document type keys used in ApplicationDetail
+const TITLE_TO_TYPE_MAP: Record<string, string> = {
+  'Passport Bio Page': 'passport_bio_page',
+  'Passport': 'passport',
+  'White Background Photo': 'white_background_photo',
+  'Company Name': 'company_name',
+  'Business Scope': 'business_scope',
+  'Email': 'email',
+  'Phone Number': 'phone',
+  'Introduction Video': 'introduction_video',
+  'Professional Certificate / Degree Certificate': 'professional_certificate',
+  'Experience Letter': 'experience_letter',
+  'Medical File': 'medical_file',
+  'Police Non-Criminal Certificate': 'police_certificate',
+  'Any Additional Documents': 'additional_documents',
+  'Company License': 'company_license',
+  'Hotel Booking': 'hotel_booking',
+  'Ticket': 'ticket',
+  'China Last Entry (if any)': 'china_last_entry',
+  'Business Card': 'business_card',
+  'Medical Reports': 'medical_reports',
+  'Marriage Certificate': 'marriage_certificate',
+  'Birth Certificate of Baby': 'birth_certificate',
+  'Baby Passport and Photo': 'baby_passport_photo',
+};
+
+// Local fallback to replace the removed API endpoints
+const getLocalServiceRequirements = (key: string): ServiceType | null => {
+  const visaFields: Record<string, { label: string; isDocument: boolean }[]> = {
+    'china_business_registration': [
+      { label: 'Passport Bio Page', isDocument: true },
+      { label: 'Company Name', isDocument: false },
+      { label: 'Business Scope', isDocument: false },
+      { label: 'Email', isDocument: false },
+      { label: 'Phone Number', isDocument: false },
+      { label: 'Introduction Video', isDocument: true }
+    ],
+    'china_work_visa_z': [
+      { label: 'Professional Certificate / Degree Certificate', isDocument: true },
+      { label: 'Experience Letter', isDocument: true },
+      { label: 'Medical File', isDocument: true },
+      { label: 'Police Non-Criminal Certificate', isDocument: true },
+      { label: 'White Background Photo', isDocument: true },
+      { label: 'Any Additional Documents', isDocument: true }
+    ],
+    'china_business_visa_m': [
+      { label: 'Passport', isDocument: true },
+      { label: 'White Background Photo', isDocument: true },
+      { label: 'Company License', isDocument: true },
+      { label: 'Police Non-Criminal Certificate', isDocument: true },
+      { label: 'Hotel Booking', isDocument: true },
+      { label: 'Ticket', isDocument: true },
+      { label: 'Email', isDocument: false },
+      { label: 'Phone Number', isDocument: false },
+      { label: 'China Last Entry (if any)', isDocument: true }
+    ],
+    'china_canton_fair_visa': [
+      { label: 'Passport', isDocument: true },
+      { label: 'White Background Photo', isDocument: true },
+      { label: 'Business Card', isDocument: true },
+      { label: 'Email', isDocument: false },
+      { label: 'Phone Number', isDocument: false },
+      { label: 'China Last Entry (if any)', isDocument: true }
+    ],
+    'china_tourist_visa_l': [
+      { label: 'Passport Bio Page', isDocument: true },
+      { label: 'White Background Photo', isDocument: true },
+      { label: 'Police Non-Criminal Certificate', isDocument: true },
+      { label: 'Email', isDocument: false },
+      { label: 'Phone Number', isDocument: false },
+      { label: 'China Last Entry (if any)', isDocument: true }
+    ],
+    'china_medical_health_tourism_visa': [
+      { label: 'Passport Bio Page', isDocument: true },
+      { label: 'White Background Photo', isDocument: true },
+      { label: 'Medical Reports', isDocument: true },
+      { label: 'Email', isDocument: false },
+      { label: 'Phone Number', isDocument: false },
+      { label: 'China Last Entry (if any)', isDocument: true }
+    ],
+    'china_family_visa': [
+      { label: 'Professional Certificate / Degree Certificate', isDocument: true },
+      { label: 'Experience Letter', isDocument: true },
+      { label: 'Medical File', isDocument: true },
+      { label: 'Police Non-Criminal Certificate', isDocument: true },
+      { label: 'White Background Photo', isDocument: true },
+      { label: 'Marriage Certificate', isDocument: true },
+      { label: 'Birth Certificate of Baby', isDocument: true },
+      { label: 'Baby Passport and Photo', isDocument: true },
+      { label: 'Any Additional Documents', isDocument: true }
+    ]
+  };
+
+  const fields = visaFields[key];
+  if (!fields) return null;
+
+  // Generate a formatted name (e.g. "china_work_visa_z" -> "China Work Visa Z")
+  const name = key.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+
+  return {
+    id: Math.floor(Math.random() * 10000),
+    key,
+    name,
+    requirements: fields.map((f, i) => ({
+      id: i + 1,
+      title: f.label,
+      optional: f.label.includes('(if any)'),
+      order: i
+    }))
+  };
+};
+
 export default function DocumentRequirements({ 
   serviceKey, 
   applicantId, 
@@ -48,10 +160,20 @@ export default function DocumentRequirements({
   const [documents, setDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [uploading, setUploading] = useState(false);
 
+  // Handle setting requirements locally instead of calling the API
   useEffect(() => {
-    fetchRequirements();
+    setLoading(true);
+    if (serviceKey) {
+      const localService = getLocalServiceRequirements(serviceKey);
+      if (localService) {
+        setServiceType(localService);
+        setError('');
+      } else {
+        setError('Service requirements not found');
+      }
+    }
+    setLoading(false);
   }, [serviceKey]);
 
   useEffect(() => {
@@ -60,89 +182,26 @@ export default function DocumentRequirements({
     }
   }, [applicantId]);
 
-  const fetchRequirements = async () => {
-    if (!serviceKey) return;
-    
-    setLoading(true);
-    setError('');
-    try {
-      const services = await api.getServiceTypes();
-      const service = services.find(s => s.key === serviceKey);
-      if (service) {
-        setServiceType(service);
-      } else {
-        setError('Service requirements not found');
-      }
-    } catch (err: any) {
-      console.error('Error fetching requirements:', err);
-      setError('Failed to load document requirements');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const fetchDocuments = async () => {
     if (!applicantId) return;
-    
     try {
       const docs = await api.getDocuments(applicantId);
-      setDocuments(docs);
+      // Ensure we always have an array even if the API structure varies slightly
+      const normalizedDocs = Array.isArray(docs) ? docs : ((docs as any)?.results || []);
+      setDocuments(normalizedDocs);
     } catch (err: any) {
       console.error('Error fetching documents:', err);
     }
   };
 
+  const getDocumentTypeKey = (title: string) => {
+    return TITLE_TO_TYPE_MAP[title] || title.toLowerCase().replace(/\s+/g, '_');
+  };
+
   const getDocumentStatus = (requirementTitle: string): 'missing' | 'pending' | 'approved' | 'rejected' => {
-    // Map requirement titles to document types
-    const titleToTypeMap: Record<string, string> = {
-      'Passport Bio Page': 'passport',
-      'Passport Signature Page': 'passport',
-      'White Background Photo': 'photo',
-      'Passport Photo': 'photo',
-      'Bank Statement': 'bank_statement',
-      'Flight Ticket': 'ticket',
-      'Travel Insurance': 'insurance',
-      'Medical File': 'medical',
-      'Police Non-Criminal Certificate': 'police_certificate',
-      'Experience Letter': 'experience_letter',
-      'Professional Certificate': 'professional_certificate',
-      'Degree Certificate': 'degree_certificate',
-      'Transcript': 'transcript',
-      'Hotel Booking': 'hotel_booking',
-      'Flight Booking': 'flight_booking',
-      'Itinerary': 'itinerary',
-      'Company License': 'company_license',
-      'Business Card': 'business_card',
-      'Medical Reports': 'medical_reports',
-      'Marriage Certificate': 'marriage_certificate',
-      'Birth Certificate': 'birth_certificate',
-      'Children Passport': 'children_passport',
-      'Company Name': 'company_name',
-      'Business Scope': 'business_scope',
-      'Email Address': 'email',
-      'Phone Number': 'phone',
-      'Introduction Video': 'introduction_video',
-      'Company 3 Name Suggestions': 'company_names',
-      'Shareholder Information': 'shareholder_info',
-      'China Last Entry Page': 'china_entry',
-      'China or Other Country Address': 'address',
-      'Business Scope in Short': 'business_scope_short',
-      'Language Certificate': 'language_certificate',
-      'Additional Certificate': 'additional_certificate',
-      'Incorporation Letter': 'incorporation_letter',
-      'Information Sheet Filling': 'information_sheet',
-      'Previous Health Reports History and Documents Proof': 'health_history',
-      'Professional Certificate / Degree Certificate': 'professional_degree',
-      'Last Entry to China': 'last_china_entry',
-      'Any Additional Supporting Documents': 'additional_supporting'
-    };
-
-    const documentType = titleToTypeMap[requirementTitle];
-    if (!documentType) return 'missing';
-
+    const documentType = getDocumentTypeKey(requirementTitle);
     const doc = documents.find(d => d.document_type === documentType);
     if (!doc) return 'missing';
-    
     return doc.status;
   };
 
@@ -292,52 +351,8 @@ export default function DocumentRequirements({
         <div className="divide-y divide-gray-100">
           {serviceType.requirements.map((requirement) => {
             const status = getDocumentStatus(requirement.title);
-            const doc = documents.find(d => {
-              // Map requirement to document type for finding existing document
-              const titleToTypeMap: Record<string, string> = {
-                'Passport Bio Page': 'passport',
-                'Passport Signature Page': 'passport',
-                'White Background Photo': 'photo',
-                'Passport Photo': 'photo',
-                'Bank Statement': 'bank_statement',
-                'Flight Ticket': 'ticket',
-                'Travel Insurance': 'insurance',
-                'Medical File': 'medical',
-                'Police Non-Criminal Certificate': 'police_certificate',
-                'Experience Letter': 'experience_letter',
-                'Professional Certificate': 'professional_certificate',
-                'Degree Certificate': 'degree_certificate',
-                'Transcript': 'transcript',
-                'Hotel Booking': 'hotel_booking',
-                'Flight Booking': 'flight_booking',
-                'Itinerary': 'itinerary',
-                'Company License': 'company_license',
-                'Business Card': 'business_card',
-                'Medical Reports': 'medical_reports',
-                'Marriage Certificate': 'marriage_certificate',
-                'Birth Certificate': 'birth_certificate',
-                'Children Passport': 'children_passport',
-                'Company Name': 'company_name',
-                'Business Scope': 'business_scope',
-                'Email Address': 'email',
-                'Phone Number': 'phone',
-                'Introduction Video': 'introduction_video',
-                'Company 3 Name Suggestions': 'company_names',
-                'Shareholder Information': 'shareholder_info',
-                'China Last Entry Page': 'china_entry',
-                'China or Other Country Address': 'address',
-                'Business Scope in Short': 'business_scope_short',
-                'Language Certificate': 'language_certificate',
-                'Additional Certificate': 'additional_certificate',
-                'Incorporation Letter': 'incorporation_letter',
-                'Information Sheet Filling': 'information_sheet',
-                'Previous Health Reports History and Documents Proof': 'health_history',
-                'Professional Certificate / Degree Certificate': 'professional_degree',
-                'Last Entry to China': 'last_china_entry',
-                'Any Additional Supporting Documents': 'additional_supporting'
-              };
-              return d.document_type === titleToTypeMap[requirement.title];
-            });
+            const documentTypeKey = getDocumentTypeKey(requirement.title);
+            const doc = documents.find(d => d.document_type === documentTypeKey);
 
             return (
               <div key={requirement.id} className="p-6 hover:bg-gray-50 transition">
