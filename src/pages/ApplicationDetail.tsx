@@ -7,7 +7,6 @@ import {
   getStatusColor, getDocStatusColor
 } from '@/lib/supabase';
 import Layout from '@/components/Layout';
-import DocumentRequirements from '@/components/DocumentRequirements';
 import { 
   ArrowLeft, Upload, Download, Send, FileText, MessageSquare, Clock, 
   Check, X, AlertCircle, User, Edit2, DollarSign, History, 
@@ -391,16 +390,6 @@ export default function ApplicationDetail() {
             </div>
             {app.notes && <p className="mt-4 text-sm text-gray-600 bg-gray-50 p-3 rounded-lg">{app.notes}</p>}
           </div>
-
-          {app?.visa_type && (
-            <DocumentRequirements
-              serviceKey={visaTypeKey}
-              applicantId={app.id}
-              onDocumentUpload={() => setActiveTab('documents')}
-              className="animate-in fade-in-0"
-            />
-          )}
-
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-6">Application Progress</h3>
             <div className="relative">
