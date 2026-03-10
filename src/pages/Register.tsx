@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import { api } from '@/lib/api';
 import { Mail, Lock, User, UserPlus } from 'lucide-react';
 
@@ -9,9 +8,8 @@ export default function Register() {
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { signIn: authSignIn } = useAuth();
+  
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -21,39 +19,18 @@ export default function Register() {
     
     try {
       await api.registerApplicant({ email, password, ...(fullName && { full_name: fullName }) });
-      // Sign in the newly registered applicant
-      const signInResult = await authSignIn(email, password);
-      if (signInResult.error) {
-        setError(signInResult.error.message || 'Registration failed');
-        setLoading(false);
-        return;
-      }
-      setSuccess(true);
+      
+      // Redirect to login and pass the verification instruction in the state
+      navigate('/login', { 
+        state: { message: 'Registration successful! Please check your email to verify your account before logging in.' } 
+      });
+      
     } catch (err) {
       setError((err as any)?.message || 'Registration failed');
+    } finally {
       setLoading(false);
-      return;
     }
   };
-
-  if (success) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-        <div className="sm:mx-auto sm:w-full sm:max-w-md">
-          <div className="bg-white py-8 px-4 shadow-lg rounded-lg sm:px-10 text-center">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg className="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Registration Successful!</h2>
-            <p className="text-gray-600 mb-6">Please check your email to verify your account.</p>
-            <Link to="/login" className="text-orange-500 hover:text-orange-600 font-medium">Go to Login</Link>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
@@ -103,7 +80,8 @@ export default function Register() {
           </form>
 
           <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">Already have an account? <Link to="/login" className="font-medium text-orange-500 hover:text-orange-600">Sign in</Link></p>
+            {/* Changed from <Link> to standard <a href="..."> */}
+            <p className="text-sm text-gray-600">Already have an account? <a href="/login" className="font-medium text-orange-500 hover:text-orange-600">Sign in</a></p>
           </div>
         </div>
       </div>
